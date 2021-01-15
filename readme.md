@@ -13,4 +13,4 @@ POC is using npm
 node crawler.js -siteUrl https://www.yahoo.ca
 
 ## Running the Puppeteer scanner
-node puppeteer.js -crawlFile /Users/magalibautista/workspace/rangle/a11y-crawler-poc/src/crawls/www.yahoo.ca/2021-01-15T18-44-23.571Z/www.yahoo.ca.txt -filePrefix yahoo
+node puppeteer.js -crawlFile /Users/magalibautista/workspace/rangle/a11y-crawler-poc/src/crawls/www.yahoo.ca/2021-01-15T18-44-23.571Z/www.yahoo.ca.txt -filePrefix yahoo 
