@@ -1,8 +1,9 @@
 const Crawler = require('crawler');
 const fs = require('fs');
+const minimist = require('minimist');
 
 let siteUrl = '';
-let saveFile = '';
+let urlSaveFile = '';
 let siteDomain = '';
 let resultFolderPath = './crawls/';
 let crawledFileStream = null;
@@ -11,7 +12,7 @@ const appArgumentsDesc = `
   
   Arguments:
   
-  siteUrl <url>  (url provided for the crawling - no trailing slashes ie. https://www.facebook.com)
+  siteUrl <URL>  (url provided for the crawling - no trailing slashes ie. https://www.facebook.com)
   saveFile <path>  (optional) (path where the url text file will be saved) defaults to url hostname
 `;
 
@@ -65,9 +66,9 @@ function launchCrawler(url) {
         if (c.queueSize == 0) {
             setTimeout(() => {
                 if (c.queueSize == 0) {
-                    console.log('closing the filestream...');
+                    console.log('Closing the filestream...');
                     crawledFileStream.end(() => {
-                        console.log('crawling completed.');
+                        console.log('Crawling completed.');
                     });
                 }
             }, 10000)
@@ -88,56 +89,43 @@ const writeToFile = (data) => {
 
 (() => {
     let validArgs = true;
-    process.argv.forEach((val, index) => {
-        const getValue = () => {
-            if (index + 1 < process.argv.length) {
-                return process.argv[index + 1];
-            }
-            throw 'Arguments provided are not valid.';
-        };
+    let argv = minimist(process.argv.slice(2));
 
-        try {
-            switch (val) {
-                case '-siteUrl':
-                    siteUrl = getValue();
-                    break;
-                case '-saveFile':
-                    saveFile = getValue();
-                    break;
-            }
-        } catch (err) {
-            console.log('Error: ', err);
-            return;
-        }
-    });
+    siteUrl = argv.siteUrl;
+    urlSaveFile = argv.saveFile;
 
-    if (
-        siteUrl === ''
-    ) {
+    if (siteUrl === undefined) {
         validArgs = false;
     }
     if (validArgs) {
-        siteDomain = new URL(siteUrl).hostname;
 
-        if (saveFile === '') {
-            saveFile = siteDomain;
+        try {
+            siteDomain = new URL(siteUrl).hostname;
+
+            if (urlSaveFile === undefined) {
+                urlSaveFile = siteDomain;
+            }
+
+            const tstamp = new Date().toISOString().replace(/:/g, '-');
+            resultFolderPath = `./crawls/${siteDomain}/${tstamp}/`;
+            fs.promises
+                .mkdir(resultFolderPath, { recursive: true })
+                .then(async () => {
+
+                    crawledFileStream = fs.createWriteStream(`${resultFolderPath + urlSaveFile}.txt`, { flags: 'a' });
+                    crawledFileStream.on('error', function (err) { throw err; });
+
+                    launchCrawler(siteUrl);
+                })
+                .catch((err) => {
+                    throw err;
+                });
+        } catch (e) {
+            if (e.code == 'ERR_INVALID_URL') {
+                console.log('Invalid URL provided.');
+            }
+            console.log('Error launching the crawler.');
         }
-        // create a folder that is timestamped
-        const tstamp = new Date().toISOString().replace(/:/g, '-');
-        resultFolder = tstamp;
-        resultFolderPath = `./crawls/${siteDomain}/${tstamp}/`;
-        fs.promises
-            .mkdir(resultFolderPath, { recursive: true })
-            .then(async () => {
-
-                crawledFileStream = fs.createWriteStream(`${resultFolderPath + saveFile}.txt`, { flags: 'a' });
-                crawledFileStream.on('error', function (err) { console.error(`file writing error: ${err}`) });
-
-                launchCrawler(siteUrl);
-            })
-            .catch((err) => {
-                throw err;
-            });
     } else {
         console.log(appArgumentsDesc);
     }
