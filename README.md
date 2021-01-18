@@ -11,16 +11,17 @@ POC is using npm
 Created using node v13.8
 
 ## Running the crawler
-node crawler.js -siteUrl <url> [-saveFile <path>]
+node crawler.js --siteUrl <URL> [--saveFile <string>]
 
-if no saveFile is provided, it will default to the url's hostname.
+- if no saveFile is provided, it will default to the url's hostname.
+- folder/file creation:  ./crawls/<hostname>/<timestamp>/<saveFile>.txt
 
-Example: `node crawler.js -siteUrl https://www.yahoo.ca`
+Example call: `node crawler.js --siteUrl https://www.yahoo.ca`
 
 ## Running the Puppeteer scanner
-node puppeteer.js -crawlFile `<path of the url file>` -filePrefix `<string>`
+node puppeteer.js --crawlFilePath <string> --filePrefix <string>
 
-Example: `node puppeteer.js -crawlFile /Users/magalibautista/workspace/rangle/a11y-crawler-poc/src/crawls/www.yahoo.ca/2021-01-15T18-44-23.571Z/www.yahoo.ca.txt -filePrefix yahoo`
+Example: `node puppeteer.js --crawlFilePath /Users/magalibautista/workspace/rangle/a11y-crawler-poc/src/crawls/www.yahoo.ca/2021-01-15T18-44-23.571Z/www.yahoo.ca.txt --filePrefix yahoo`
 
 ## TODOs
 - cleanup the existing code
