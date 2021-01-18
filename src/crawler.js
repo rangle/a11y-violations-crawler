@@ -5,6 +5,7 @@ let siteUrl = '';
 let saveFile = '';
 let siteDomain = '';
 let resultFolderPath = './crawls/';
+let crawledFileStream = null;
 const appArgumentsDesc = `
   Usage: node crawler.js -siteUrl <name> [-saveFile <path>]
   
@@ -15,12 +16,10 @@ const appArgumentsDesc = `
 `;
 
 const urlsCollected = [];
-const c = new Crawler({ rateLimit: 2000 });
 
-function crawlUrls(url) {
-    console.log(`Crawling ${url}`);
-    c.queue({
-        uri: url,
+function launchCrawler(url) {
+    const c = new Crawler({
+        rateLimit: 2000,
         callback: (error, res, done) => {
             if (error) {
                 console.log(error);
@@ -28,11 +27,11 @@ function crawlUrls(url) {
             } else {
                 const $ = res.$;
                 try {
-                    const links = $('a');
+                    const linksOnPage = $('a');
 
-                    Object.keys(links).forEach((item) => {
-                        if (links[item].type === 'tag') {
-                            let href = links[item].attribs.href;
+                    Object.keys(linksOnPage).forEach((item) => {
+                        if (linksOnPage[item].type === 'tag') {
+                            let href = linksOnPage[item].attribs.href;
 
                             if (href && !href.startsWith('http')) {
                                 if (!href.startsWith('/')) {
@@ -42,20 +41,16 @@ function crawlUrls(url) {
                             }
                             if (href && (href.indexOf(siteDomain) > -1) && !urlsCollected.includes(href)) {
                                 urlsCollected.push(href);
+                                writeToFile(href);
+                                c.queue(href);
 
-                                setTimeout(function () {
-                                    crawlUrls(href);
-                                }, 2000)
-
-                            } else {
-                                console.log(`href ${href} was already visited`);
                             }
                         }
 
                     });
 
                 } catch (e) {
-                    console.error(`Encountered an error crawling ${url}. Aborting crawl.`);
+                    console.error(`Encountered an error crawling. Aborting crawl.`);
                     done();
                 }
 
@@ -64,25 +59,32 @@ function crawlUrls(url) {
 
         }
     });
+
+
+    c.on('drain', () => {
+        if (c.queueSize == 0) {
+            setTimeout(() => {
+                if (c.queueSize == 0) {
+                    console.log('closing the filestream...');
+                    crawledFileStream.end(() => {
+                        console.log('crawling completed.');
+                    });
+                }
+            }, 10000)
+        };
+    });
+    console.log(`Crawling ${url}`);
+    c.queue(url);
 }
 
-// This doesn't fire when the crawler is completely finished...
-c.on('drain', () => {
-    // For example, release a connection to database.
-    writeToFile(`${resultFolderPath + saveFile}.txt`, urlsCollected, {});
-});
-
-// c.queueSize
-const writeToFile = (filePath, dataToWrite, options) => {
-    console.log('writing results to file...');
-    var file = fs.createWriteStream(filePath);
-    file.on('error', function (err) { console.error(`file writing error: ${err}`) });
-    dataToWrite.forEach(function (line) {
-        file.write(`${line}
-`);
-    });
-    file.end();
+const writeToFile = (data) => {
+    console.log('writing data to file...');
+    if (crawledFileStream) {
+        crawledFileStream.write(`${data}\n`);
+    }
 };
+
+
 
 (() => {
     let validArgs = true;
@@ -127,8 +129,11 @@ const writeToFile = (filePath, dataToWrite, options) => {
         fs.promises
             .mkdir(resultFolderPath, { recursive: true })
             .then(async () => {
-                // Queue just one URL, with default callback
-                crawlUrls(siteUrl);
+
+                crawledFileStream = fs.createWriteStream(`${resultFolderPath + saveFile}.txt`, { flags: 'a' });
+                crawledFileStream.on('error', function (err) { console.error(`file writing error: ${err}`) });
+
+                launchCrawler(siteUrl);
             })
             .catch((err) => {
                 throw err;
