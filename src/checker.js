@@ -3,17 +3,10 @@ const axeCore = require('axe-core');
 const fs = require('fs');
 const readline = require('readline');
 const ejs = require('ejs');
-const minimist = require('minimist')
-
-let resultFolderPath = '';
-let resultFolder = '';
-let folderName = '';
-let crawlFilePath = '';
-let filePrefix = '';
-let urlCounter = 0;
+const minimist = require('minimist');
 
 const appArgumentsDesc = `
-  Usage: node puppeteer.js --crawlFilePath <string> --filePrefix <string>
+  Usage: node checker.js --crawlFilePath <string> --filePrefix <string>
   
   Arguments:
   
@@ -21,7 +14,8 @@ const appArgumentsDesc = `
   filePrefix    <string>  prefix for the generated json files
 `;
 
-const launchScan = async () => {
+const launchScan = async (crawlFilePath, resultFolderPath, filePrefix) => {
+  let urlCounter = 0;
   try {
     const browser = await puppeteer.launch({ headless: false });
     const page = await browser.newPage();
@@ -34,7 +28,8 @@ const launchScan = async () => {
 
     for await (const line of readLine) {
       console.log('line is: ', line);
-      await runScan(page, line);
+      await runScan(page, line, resultFolderPath, filePrefix, urlCounter);
+      urlCounter++;
     }
 
     // after looping through all the urls in the file, close the browser
@@ -46,7 +41,7 @@ const launchScan = async () => {
 }
 
 
-const runScan = async (page, urlFromFile) => {
+const runScan = async (page, urlFromFile, resultFolderPath, filePrefix, urlCounter) => {
   await page.goto(urlFromFile, { waitUntil: 'networkidle2' });
   console.log('inject axe core');
 
@@ -106,7 +101,6 @@ const runScan = async (page, urlFromFile) => {
 
   fs.writeFileSync(`${resultFolderPath}${filePrefix}_${urlCounter}.html`, html);
 
-  urlCounter++;
   await handle.dispose();
 };
 
@@ -125,12 +119,37 @@ const injectAxe = (page) => {
   `);
 };
 
-(() => {
+const runChecker = (crawlFilePath, filePrefix) => {
+  try {
+    const pathParts = crawlFilePath.split('/');
+    const fileName = pathParts.slice(-1);
+    const folderName = fileName[0].replace('.txt', '');
+
+    console.log('folderName: ', folderName);
+    // create a folder that is timestamped
+    const tstamp = new Date().toISOString().replace(/:/g, '-');
+    const resultFolder = `${folderName}/${tstamp}`;
+    const resultFolderPath = `./scans/${resultFolder}/`;
+    fs.promises
+      .mkdir(resultFolderPath, { recursive: true })
+      .then(async () => {
+        // Queue just one URL, with default callback
+        launchScan(crawlFilePath, resultFolderPath, filePrefix);
+      })
+      .catch((err) => {
+        throw err;
+      });
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+exports.launch = (() => {
   let validArgs = true;
   let argv = minimist(process.argv.slice(2));
 
-  crawlFilePath = argv.crawlFilePath;
-  filePrefix = argv.filePrefix;
+  const crawlFilePath = argv.crawlFilePath;
+  const filePrefix = argv.filePrefix;
 
   if (
     crawlFilePath === undefined ||
@@ -140,30 +159,7 @@ const injectAxe = (page) => {
   }
 
   if (validArgs) {
-
-    try {
-      const pathParts = crawlFilePath.split('/');
-      const fileName = pathParts.slice(-1);
-      folderName = fileName[0].replace('.txt', '');
-
-      console.log('folderName: ', folderName);
-      // create a folder that is timestamped
-      const tstamp = new Date().toISOString().replace(/:/g, '-');
-      resultFolder = `${folderName}/${tstamp}`;
-      resultFolderPath = `./scans/${resultFolder}/`;
-      fs.promises
-        .mkdir(resultFolderPath, { recursive: true })
-        .then(async () => {
-          // Queue just one URL, with default callback
-          launchScan();
-        })
-        .catch((err) => {
-          throw err;
-        });
-    } catch (e) {
-      console.error(e);
-    }
-
+    runChecker(crawlFilePath, filePrefix);
   } else {
     console.log(appArgumentsDesc);
   }

@@ -18,10 +18,10 @@ node crawler.js --siteUrl <URL> [--saveFile <string>]
 
 Example call: `node crawler.js --siteUrl https://www.yahoo.ca`
 
-## Running the Puppeteer scanner
-node puppeteer.js --crawlFilePath <string> --filePrefix <string>
+## Running the Puppeteer checker
+node checker.js --crawlFilePath <string> --filePrefix <string>
 
-Example: `node puppeteer.js --crawlFilePath /Users/magalibautista/workspace/rangle/a11y-crawler-poc/src/crawls/www.yahoo.ca/2021-01-15T18-44-23.571Z/www.yahoo.ca.txt --filePrefix yahoo`
+Example: `node checker.js --crawlFilePath /Users/magalibautista/workspace/rangle/a11y-crawler-poc/src/crawls/www.yahoo.ca/2021-01-15T18-44-23.571Z/www.yahoo.ca.txt --filePrefix yahoo`
 
 ## TODOs
 - cleanup the existing code
