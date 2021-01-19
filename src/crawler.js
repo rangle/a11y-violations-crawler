@@ -2,13 +2,9 @@ const Crawler = require('crawler');
 const fs = require('fs');
 const minimist = require('minimist');
 
-let siteUrl = '';
-let urlSaveFile = '';
-let siteDomain = '';
-let resultFolderPath = './crawls/';
 let crawledFileStream = null;
 const appArgumentsDesc = `
-  Usage: node crawler.js -siteUrl <name> [-saveFile <path>]
+  Usage: node crawler.js --siteUrl <name> [--saveFile <path>]
   
   Arguments:
   
@@ -18,7 +14,7 @@ const appArgumentsDesc = `
 
 const urlsCollected = [];
 
-function launchCrawler(url) {
+function launchCrawler(baseUrl, siteDomain) {
     const c = new Crawler({
         rateLimit: 2000,
         callback: (error, res, done) => {
@@ -38,7 +34,7 @@ function launchCrawler(url) {
                                 if (!href.startsWith('/')) {
                                     href = `/${href}`;
                                 }
-                                href = `${siteUrl}${href}`;
+                                href = `${baseUrl}${href}`;
                             }
                             if (href && (href.indexOf(siteDomain) > -1) && !urlsCollected.includes(href)) {
                                 urlsCollected.push(href);
@@ -52,6 +48,7 @@ function launchCrawler(url) {
 
                 } catch (e) {
                     console.error(`Encountered an error crawling. Aborting crawl.`);
+                    console.log('error: ', e);
                     done();
                 }
 
@@ -74,8 +71,8 @@ function launchCrawler(url) {
             }, 10000)
         };
     });
-    console.log(`Crawling ${url}`);
-    c.queue(url);
+    console.log(`Crawling ${baseUrl}`);
+    c.queue(baseUrl);
 }
 
 const writeToFile = (data) => {
@@ -85,47 +82,48 @@ const writeToFile = (data) => {
     }
 };
 
+const runCrawler = (siteUrl, urlSaveFile) => {
+    try {
+        const siteDomain = new URL(siteUrl).hostname;
 
+        if (urlSaveFile === undefined) {
+            urlSaveFile = siteDomain;
+        }
 
-(() => {
+        const tstamp = new Date().toISOString().replace(/:/g, '-');
+        const resultFolderPath = `./crawls/${siteDomain}/${tstamp}/`;
+        fs.promises
+            .mkdir(resultFolderPath, { recursive: true })
+            .then(async () => {
+
+                crawledFileStream = fs.createWriteStream(`${resultFolderPath + urlSaveFile}.txt`, { flags: 'a' });
+                crawledFileStream.on('error', function (err) { throw err; });
+
+                launchCrawler(siteUrl, siteDomain);
+            })
+            .catch((err) => {
+                throw err;
+            });
+    } catch (e) {
+        if (e.code == 'ERR_INVALID_URL') {
+            console.log('Invalid URL provided.');
+        }
+        console.log('Error launching the crawler.');
+    }
+};
+
+exports.launch = (() => {
     let validArgs = true;
     let argv = minimist(process.argv.slice(2));
 
-    siteUrl = argv.siteUrl;
-    urlSaveFile = argv.saveFile;
+    const siteUrl = argv.siteUrl;
+    const urlSaveFile = argv.saveFile;
 
     if (siteUrl === undefined) {
         validArgs = false;
     }
     if (validArgs) {
-
-        try {
-            siteDomain = new URL(siteUrl).hostname;
-
-            if (urlSaveFile === undefined) {
-                urlSaveFile = siteDomain;
-            }
-
-            const tstamp = new Date().toISOString().replace(/:/g, '-');
-            resultFolderPath = `./crawls/${siteDomain}/${tstamp}/`;
-            fs.promises
-                .mkdir(resultFolderPath, { recursive: true })
-                .then(async () => {
-
-                    crawledFileStream = fs.createWriteStream(`${resultFolderPath + urlSaveFile}.txt`, { flags: 'a' });
-                    crawledFileStream.on('error', function (err) { throw err; });
-
-                    launchCrawler(siteUrl);
-                })
-                .catch((err) => {
-                    throw err;
-                });
-        } catch (e) {
-            if (e.code == 'ERR_INVALID_URL') {
-                console.log('Invalid URL provided.');
-            }
-            console.log('Error launching the crawler.');
-        }
+        runCrawler(siteUrl, urlSaveFile);
     } else {
         console.log(appArgumentsDesc);
     }
