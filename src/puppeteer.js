@@ -3,21 +3,22 @@ const axeCore = require('axe-core');
 const fs = require('fs');
 const readline = require('readline');
 const ejs = require('ejs');
+const minimist = require('minimist')
 
 let resultFolderPath = '';
 let resultFolder = '';
 let folderName = '';
-let crawlFile = '';
+let crawlFilePath = '';
 let filePrefix = '';
 let urlCounter = 0;
 
 const appArgumentsDesc = `
-  Usage: node puppeteer.js -crawlFile <path> -filePrefix <name>
+  Usage: node puppeteer.js --crawlFilePath <string> --filePrefix <string>
   
   Arguments:
   
-  crawlFile <path>   (path of the file containing urls to scan)
-  filePrefix <name>  prefix for the generated json files
+  crawlFilePath <string>  (path of the file containing urls to scan)
+  filePrefix    <string>  prefix for the generated json files
 `;
 
 const launchScan = async () => {
@@ -26,7 +27,7 @@ const launchScan = async () => {
     const page = await browser.newPage();
 
     // Get the url from the crawl file
-    const readStream = fs.createReadStream(crawlFile, {
+    const readStream = fs.createReadStream(crawlFilePath, {
       encoding: 'utf-8',
     });
     const readLine = readline.createInterface(readStream);
@@ -126,32 +127,14 @@ const injectAxe = (page) => {
 
 (() => {
   let validArgs = true;
-  process.argv.forEach((val, index) => {
-    const getValue = () => {
-      if (index + 1 < process.argv.length) {
-        return process.argv[index + 1];
-      }
-      throw 'Arguments provided are not valid.';
-    };
+  let argv = minimist(process.argv.slice(2));
 
-    try {
-      switch (val) {
-        case '-crawlFile':
-          crawlFile = getValue();
-          break;
-        case '-filePrefix':
-          filePrefix = getValue();
-          break;
-      }
-    } catch (err) {
-      console.log('Error: ', err);
-      return;
-    }
-  });
+  crawlFilePath = argv.crawlFilePath;
+  filePrefix = argv.filePrefix;
 
   if (
-    crawlFile === '' ||
-    filePrefix === ''
+    crawlFilePath === undefined ||
+    filePrefix === undefined
   ) {
     validArgs = false;
   }
@@ -159,7 +142,7 @@ const injectAxe = (page) => {
   if (validArgs) {
 
     try {
-      const pathParts = crawlFile.split('/');
+      const pathParts = crawlFilePath.split('/');
       const fileName = pathParts.slice(-1);
       folderName = fileName[0].replace('.txt', '');
 
