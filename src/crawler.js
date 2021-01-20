@@ -114,7 +114,7 @@ const runCrawler = (siteUrl, urlSaveFile) => {
 
 exports.launch = (() => {
     let validArgs = true;
-    let argv = minimist(process.argv.slice(2));
+    const argv = minimist(process.argv.slice(2));
 
     const siteUrl = argv.siteUrl;
     const urlSaveFile = argv.saveFile;
