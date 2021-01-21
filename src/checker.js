@@ -4,7 +4,20 @@ const fs = require('fs');
 const readline = require('readline');
 const ejs = require('ejs');
 const minimist = require('minimist');
+const template = require('./templates/scan-result');
 
+const summaryData = {
+  siteUrl: '',
+  totalViolations: 0,
+  violationSummary: {
+    minor: 0,
+    moderate: 0,
+    serious: 0,
+    critical: 0
+  },
+  urlList: []
+};
+const getSiteSummary = true;
 const appArgumentsDesc = `
   Usage: node checker.js --crawlFilePath <string> --filePrefix <string>
   
@@ -19,7 +32,7 @@ const launchScan = async (crawlFilePath, resultFolderPath, filePrefix) => {
   try {
     const browser = await puppeteer.launch({ headless: false });
     const page = await browser.newPage();
-
+    page.setDefaultNavigationTimeout(0); // temporary for now.
     // Get the url from the crawl file
     const readStream = fs.createReadStream(crawlFilePath, {
       encoding: 'utf-8',
@@ -35,11 +48,33 @@ const launchScan = async (crawlFilePath, resultFolderPath, filePrefix) => {
     // after looping through all the urls in the file, close the browser
     await browser.close();
     console.log('scan completed.');
+
+    if (getSiteSummary) {
+      generateSiteSummary(resultFolderPath);
+    }
   } catch (err) {
     console.log('error: ', err);
   }
 }
 
+// Keep track of the violations and 
+// violation types
+// Create JSON with violation count, and url -> json result mapping
+const generateSiteSummary = (resultFolderPath) => {
+  const summaryFile = `${resultFolderPath}summary.json`;
+  const data = JSON.stringify(summaryData);
+  // console.log('siteSummary: ', data);
+  fs.writeFileSync(summaryFile, data);
+};
+
+const updateSummaryViolations = (resultJSON) => {
+  resultJSON.violations.forEach((violation) => {
+    violation.nodes.forEach((node) => {
+      summaryData.totalViolations++;
+      summaryData.violationSummary[node.impact]++;
+    });
+  });
+}
 
 const runScan = async (page, urlFromFile, resultFolderPath, filePrefix, urlCounter) => {
   await page.goto(urlFromFile, { waitUntil: 'networkidle2' });
@@ -50,54 +85,19 @@ const runScan = async (page, urlFromFile, resultFolderPath, filePrefix, urlCount
   console.log('injected. get results');
 
   // Get the results from `axe.run()`.
-  results = await handle.jsonValue();
+  const results = await handle.jsonValue();
   console.log('write results to file');
 
   const resultFile = `${resultFolderPath}${filePrefix}_${urlCounter}.json`;
   console.log(`Writing to file: ${resultFile}`);
 
+  summaryData.urlList.push({ siteUrl: urlFromFile, resultFile: `${filePrefix}_${urlCounter}.json` });
+  updateSummaryViolations(results);
+
   const data = JSON.stringify(results);
   fs.writeFileSync(resultFile, data);
 
-  let html = ejs.render(`<html><head>
-    <style>
-      .show {
-        display: block !important;
-      }
-    </style>
-    <script>
-      function toggle(id) {
-        document.getElementById(id).classList.toggle('show');
-      }
-    </script>
-  </head><body style="font-family:Arial;padding:20px;">
-  <h1>Results for <%=url %></h1>
-  <p>Total violations for this webpage: <%=results.violations.length %></p>
- 
-  <h2>Violation Details</h2>
-    <% results.violations.forEach(function(violation, index){ %>
-        <div style="border:1px solid grey;
-        padding:15px;
-        border-radius:5px;margin-bottom:15px;">
-          <h3><%=index+1 %>. <%=violation.description%></h3>
-          <h4>Severity: <span style="color:<%=violation.impact == 'minor' ? 'green': 'red'%>;" ><%=violation.impact %></span></h4>
-          <h5>Tags: 
-            <% violation.tags.forEach(function(tag){ %>
-              <span style="margin-right:10px"><%=tag%></span>
-            <% }); %> 
-          </h5>
-          <ol type="a">
-            <% violation.nodes.forEach(function(node, idx){ %>
-              <li><p><%=node.failureSummary %></p>
-                <button id="btn-<%=index%>-<%=idx %>" type="button" onClick="toggle('code-<%=index%>-<%=idx %>')">Show Target Markup</button>
-                <pre id="code-<%=index%>-<%=idx %>" style="display:none;white-space:break-spaces;overflow-x:auto;"><%=node.html %></pre>
-              </li>
-            <% }); %>
-          </ol>
-        </div>
-    <% }); %>
- 
-</body></html>`, { results: results, url: urlFromFile });
+  const html = ejs.render(template.resultTemplate, { results: results, url: urlFromFile });
 
   fs.writeFileSync(`${resultFolderPath}${filePrefix}_${urlCounter}.html`, html);
 
@@ -109,11 +109,11 @@ const injectAxe = (page) => {
     // Inject axe source code
     ${axeCore.source}
     // Run axe
-    // axe.configure({
-    //   rules: [{
-    //     id: 'tagRule',
-    //     tags: ['wcag2a']
-    //   }]
+    // axe.run({
+    //   runOnly: {
+    //     type: 'tag',
+    //     values: ['wcag2a']
+    //   }
     // })
     axe.run()
   `);
@@ -125,11 +125,11 @@ const runChecker = (crawlFilePath, filePrefix) => {
     const fileName = pathParts.slice(-1);
     const folderName = fileName[0].replace('.txt', '');
 
+    summaryData.siteUrl = folderName; // TODO: this may not always be the hostname
     console.log('folderName: ', folderName);
     // create a folder that is timestamped
     const tstamp = new Date().toISOString().replace(/:/g, '-');
-    const resultFolder = `${folderName}/${tstamp}`;
-    const resultFolderPath = `./scans/${resultFolder}/`;
+    const resultFolderPath = `./scans/${folderName}/${tstamp}/`;
     fs.promises
       .mkdir(resultFolderPath, { recursive: true })
       .then(async () => {
@@ -146,7 +146,7 @@ const runChecker = (crawlFilePath, filePrefix) => {
 
 exports.launch = (() => {
   let validArgs = true;
-  let argv = minimist(process.argv.slice(2));
+  const argv = minimist(process.argv.slice(2));
 
   const crawlFilePath = argv.crawlFilePath;
   const filePrefix = argv.filePrefix;
