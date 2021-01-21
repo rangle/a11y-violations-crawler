@@ -6,7 +6,18 @@ const ejs = require('ejs');
 const minimist = require('minimist');
 const template = require('./templates/scan-result');
 
-
+const summaryData = {
+  siteUrl: '',
+  totalViolations: 0,
+  violationSummary: {
+    minor: 0,
+    moderate: 0,
+    serious: 0,
+    critical: 0
+  },
+  urlList: []
+};
+const getSiteSummary = true;
 const appArgumentsDesc = `
   Usage: node checker.js --crawlFilePath <string> --filePrefix <string>
   
@@ -21,7 +32,7 @@ const launchScan = async (crawlFilePath, resultFolderPath, filePrefix) => {
   try {
     const browser = await puppeteer.launch({ headless: false });
     const page = await browser.newPage();
-
+    page.setDefaultNavigationTimeout(0); // temporary for now.
     // Get the url from the crawl file
     const readStream = fs.createReadStream(crawlFilePath, {
       encoding: 'utf-8',
@@ -37,11 +48,33 @@ const launchScan = async (crawlFilePath, resultFolderPath, filePrefix) => {
     // after looping through all the urls in the file, close the browser
     await browser.close();
     console.log('scan completed.');
+
+    if (getSiteSummary) {
+      generateSiteSummary(resultFolderPath);
+    }
   } catch (err) {
     console.log('error: ', err);
   }
 }
 
+// Keep track of the violations and 
+// violation types
+// Create JSON with violation count, and url -> json result mapping
+const generateSiteSummary = (resultFolderPath) => {
+  const summaryFile = `${resultFolderPath}summary.json`;
+  const data = JSON.stringify(summaryData);
+  // console.log('siteSummary: ', data);
+  fs.writeFileSync(summaryFile, data);
+};
+
+const updateSummaryViolations = (resultJSON) => {
+  resultJSON.violations.forEach((violation) => {
+    violation.nodes.forEach((node) => {
+      summaryData.totalViolations++;
+      summaryData.violationSummary[node.impact]++;
+    });
+  });
+}
 
 const runScan = async (page, urlFromFile, resultFolderPath, filePrefix, urlCounter) => {
   await page.goto(urlFromFile, { waitUntil: 'networkidle2' });
@@ -57,6 +90,9 @@ const runScan = async (page, urlFromFile, resultFolderPath, filePrefix, urlCount
 
   const resultFile = `${resultFolderPath}${filePrefix}_${urlCounter}.json`;
   console.log(`Writing to file: ${resultFile}`);
+
+  summaryData.urlList.push({ siteUrl: urlFromFile, resultFile: `${filePrefix}_${urlCounter}.json` });
+  updateSummaryViolations(results);
 
   const data = JSON.stringify(results);
   fs.writeFileSync(resultFile, data);
@@ -89,11 +125,11 @@ const runChecker = (crawlFilePath, filePrefix) => {
     const fileName = pathParts.slice(-1);
     const folderName = fileName[0].replace('.txt', '');
 
+    summaryData.siteUrl = folderName; // TODO: this may not always be the hostname
     console.log('folderName: ', folderName);
     // create a folder that is timestamped
     const tstamp = new Date().toISOString().replace(/:/g, '-');
-    const resultFolder = `${folderName}/${tstamp}`;
-    const resultFolderPath = `./scans/${resultFolder}/`;
+    const resultFolderPath = `./scans/${folderName}/${tstamp}/`;
     fs.promises
       .mkdir(resultFolderPath, { recursive: true })
       .then(async () => {
