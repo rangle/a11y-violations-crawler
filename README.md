@@ -11,15 +11,15 @@ POC is using npm
 Created using node v13.8
 
 ## Running the crawler
-node crawler.js --siteUrl <URL> [--saveFile <string>]
+node crawler.js --siteUrl `<URL>` [--saveFile <string>]
 
 - if no saveFile is provided, it will default to the url's hostname.
-- folder/file creation:  ./crawls/<hostname>/<timestamp>/<saveFile>.txt
+- folder/file creation:  `./crawls/<hostname>/<timestamp>/<saveFile>.txt`
 
 Example call: `node crawler.js --siteUrl https://www.yahoo.ca`
 
 ## Running the Puppeteer checker
-node checker.js --crawlFilePath <string> --filePrefix <string>
+node checker.js --crawlFilePath `<string>` --filePrefix `<string>`
 
 Example: `node checker.js --crawlFilePath /Users/magalibautista/workspace/rangle/a11y-crawler-poc/src/crawls/www.yahoo.ca/2021-01-15T18-44-23.571Z/www.yahoo.ca.txt --filePrefix yahoo`
 
