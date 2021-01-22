@@ -11,12 +11,47 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mini.css/3.0.1/mini-default.min.css">
+        <link rel="stylesheet" href="./styles/styles.css">
+        <script src="scripts/ejs.min.js"></script>
     </head>
     <body>
         <!--[if lt IE 7]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
+        <h1>A11Y POC</h1>
         
-        <script src="" async defer></script>
+        <div id="site-results"></div>
+
+        <script async defer>
+            const pageTemplate = `
+            <h2>Total violations for <%=results.siteUrl %>: <%=results.totalViolations %></h2>
+            <h3>Violations Summary</h3>
+            <ul>
+                <li>Minor: <%=results.violationSummary.minor %></li>
+                <li>Moderate: <%=results.violationSummary.moderate %></li>
+                <li>Serious: <%=results.violationSummary.serious %></li>
+                <li>Critical: <%=results.violationSummary.critical %></li>
+            </ul>
+
+            <h3>Scanned Urls</h3>
+            <ol>
+                <% results.urlList.forEach(function(url){ %>
+                    <li><a href="./sitepage-results.html?site=<%=siteUrl %>&amp;page=<%=url.resultFile %>"><%=url.siteUrl%></a></li>
+                  <% }); %> 
+            </ol>
+            
+            `
+            const siteurl = document.location.search.replace('?', '').split('=')[1];
+            fetch(`../scans/${siteurl}/2021-01-21T16-11-28.816Z/summary.json`,
+            {mode: 'no-cors'}).then((response)=>{
+                console.log(response)
+                return response.json();
+              }).then(jsonRes => {
+                const html = ejs.render(pageTemplate, {results: jsonRes, siteUrl: siteurl});
+                document.getElementById('site-results').innerHTML= html;
+              });
+
+        </script>
+
     </body>
 </html>
