@@ -91,7 +91,7 @@ const runCrawler = (siteUrl, urlSaveFile) => {
         }
 
         const tstamp = new Date().toISOString().replace(/:/g, '-');
-        const resultFolderPath = `../public/crawls/${siteDomain}/${tstamp}/`;
+        const resultFolderPath = `./crawls/${siteDomain}/${tstamp}/`;
         fs.promises
             .mkdir(resultFolderPath, { recursive: true })
             .then(async () => {
