@@ -1,4 +1,4 @@
 node_modules/
 src/crawls/
-src/scans/
+src/public/scans/
 .DS_Store
