@@ -2,9 +2,7 @@ const puppeteer = require('puppeteer');
 const axeCore = require('axe-core');
 const fs = require('fs');
 const readline = require('readline');
-const ejs = require('ejs');
 const minimist = require('minimist');
-const template = require('./templates/scan-result');
 
 const summaryData = {
   siteUrl: '',
@@ -96,10 +94,6 @@ const runScan = async (page, urlFromFile, resultFolderPath, filePrefix, urlCount
 
   const data = JSON.stringify(results);
   fs.writeFileSync(resultFile, data);
-
-  const html = ejs.render(template.resultTemplate, { results: results, url: urlFromFile });
-
-  fs.writeFileSync(`${resultFolderPath}${filePrefix}_${urlCounter}.html`, html);
 
   await handle.dispose();
 };
