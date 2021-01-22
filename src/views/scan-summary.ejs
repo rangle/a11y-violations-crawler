@@ -23,7 +23,7 @@
         <h3>Scanned Urls</h3>
         <ol>
             <% results.urlList.forEach(function(url){ %>
-                <li><a href="./sitepage-results.html?site=<%=siteUrl %>&amp;page=<%=url.resultFile %>"><%=url.siteUrl%></a></li>
+                <li><a href="./<%=url.resultFile.replace('.json','') %>"><%=url.siteUrl%></a></li>
                 <% }); %> 
         </ol>
     </body>

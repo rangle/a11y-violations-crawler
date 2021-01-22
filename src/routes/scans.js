@@ -32,5 +32,17 @@ router.get('/:siteName/:scanFolder', function (req, res, next) {
     });
 });
 
+/* GET site scan detail. */
+router.get('/:siteName/:scanFolder/:scanFile', function (req, res, next) {
+    fs.readFile(path.join(__dirname, `../public/scans/${req.params.siteName}/${req.params.scanFolder}/${req.params.scanFile}.json`), (err, data) => {
+        if (err) {
+            console.log('fs error? ', err);
+        }
+        const parsedData = JSON.parse(data);
+
+        console.log('parsedData: ', parsedData);
+        res.render('scan-details', { siteUrl: req.params.siteName, results: parsedData });
+    });
+});
 
 module.exports = router;
