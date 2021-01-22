@@ -7,14 +7,14 @@
         <meta name="description" content="POC to run the a11y crawler, and display the results in a user-friendly way.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mini.css/3.0.1/mini-default.min.css">
-        <link rel="stylesheet" href="./stylesheets/style.css">
+        <link rel="stylesheet" href="/stylesheets/style.css">
     </head>
     <body>
         <h1>A11Y POC</h1>
-        <h2>Available Scan Results</h2>
+        <h2>Available Scan Results for <%=siteName %></h2>
         <ul>
           <% dirs.forEach(dir=>{ %>
-            <li><a href="./scans/<%=dir %>"><%=dir %></a></li>
+            <li><a href="./<%=dir %>"><%=dir %></a></li>
             <%}) %>
         </ul>
     </body>

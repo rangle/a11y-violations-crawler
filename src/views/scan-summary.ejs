@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>A11y Crawler POC</title>
+        <meta name="description" content="POC to run the a11y crawler, and display the results in a user-friendly way.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mini.css/3.0.1/mini-default.min.css">
+        <link rel="stylesheet" href="/stylesheets/style.css">
+    </head>
+    <body>
+        <h1>A11Y POC</h1>
+        <h2>Total violations for <%=siteUrl %>: <%=results.totalViolations %></h2>
+        <h3>Violations Summary</h3>
+        <ul>
+            <li>Minor: <%=results.violationSummary.minor %></li>
+            <li>Moderate: <%=results.violationSummary.moderate %></li>
+            <li>Serious: <%=results.violationSummary.serious %></li>
+            <li>Critical: <%=results.violationSummary.critical %></li>
+        </ul>
+
+        <h3>Scanned Urls</h3>
+        <ol>
+            <% results.urlList.forEach(function(url){ %>
+                <li><a href="./sitepage-results.html?site=<%=siteUrl %>&amp;page=<%=url.resultFile %>"><%=url.siteUrl%></a></li>
+                <% }); %> 
+        </ol>
+    </body>
+</html>

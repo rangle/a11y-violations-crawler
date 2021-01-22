@@ -10,8 +10,7 @@ router.get('/', function (req, res, next) {
       console.log('fs error? ', err);
     }
     const scanDirs = files.filter(f => f !== '.DS_Store');
-    console.log('scanDirs: ', scanDirs);
-    res.render('index', { title: 'Express', dirs: scanDirs });
+    res.render('index', { dirs: scanDirs });
   });
 
 });
