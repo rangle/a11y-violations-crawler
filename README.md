@@ -36,3 +36,5 @@ Example: `node checker.js --crawlFilePath /Users/magalibautista/workspace/rangle
 - allow more parameters to be passed to the axe core library for different kinds of scans
 - update the script so that puppeteer does both the crawling and scanning at the same time?
 - decide on a frontend framework to display the results?
+- the category tags ideally should link to their respective rules
+- be able to further filter the urls that will be saved in the crawl result file
