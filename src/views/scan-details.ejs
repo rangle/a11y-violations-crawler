@@ -34,9 +34,14 @@
                 <h4>Severity: <span style="color:<%=violation.impact == 'minor' ? 'green': 'red'%>;" ><%=violation.impact %></span></h4>
                 <h5>Tags: 
                 <% violation.tags.forEach(function(tag){ %>
+                  <% if( tag === 'wcag2a') { %>
+                    <a href="https://www.w3.org/WAI/WCAG21/quickref/" target="_blank"><span style="margin-right:10px"><%=tag%></span></a>
+                  <% } else { %>
                     <span style="margin-right:10px"><%=tag%></span>
+                    <% } %>
                 <% }); %> 
                 </h5>
+                <h5><a href="<%=violation.helpUrl %>" target="_blank">More Information</a></h5>
                 <ol type="a">
                 <% violation.nodes.forEach(function(node, idx){ %>
                     <li><p><%=node.failureSummary %></p>
