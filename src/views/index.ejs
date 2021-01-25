@@ -17,5 +17,16 @@
             <li class="leading-6"><a class="text-blue-600" href="./scans/<%=dir %>"><%=dir %></a></li>
             <%}) %>
         </ul>
+        <hr />
+        <h2>Run a New Scan</h2>
+        <form>
+            <label>Site Url (Without ending slash "/")
+                <input name="siteUrl" id="siteUrl" type="url" placeholder="https://example.com" pattern="(http|https)://.*" required>
+            </label>
+            <label>After crawl completes, start the scan
+                <input type="checkbox" id="autoScan"/>
+            </label>
+            <input formmethod="get" type="submit" value="Launch Tool" onclick="" />
+        </form>
     </body>
 </html>
