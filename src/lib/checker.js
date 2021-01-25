@@ -138,6 +138,7 @@ const runChecker = (crawlFilePath, filePrefix) => {
   }
 };
 
+// TODO: Could be moved elsewhere
 exports.launch = (() => {
   let validArgs = true;
   const argv = minimist(process.argv.slice(2));

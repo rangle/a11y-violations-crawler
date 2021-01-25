@@ -1,6 +1,7 @@
 const Crawler = require('crawler');
 const fs = require('fs');
 const minimist = require('minimist');
+const { crawlerConfig } = require('./crawler-config');
 
 let crawledFileStream = null;
 const appArgumentsDesc = `
@@ -13,6 +14,17 @@ const appArgumentsDesc = `
 `;
 
 const urlsCollected = [];
+
+function isValidUrl(url) {
+    let isValid = true;
+    crawlerConfig.urlFilters.forEach(filter => {
+        if (url.indexOf(filter) > -1) {
+            isValid = false;
+        }
+    });
+
+    return isValid;
+};
 
 function launchCrawler(baseUrl, siteDomain) {
     const c = new Crawler({
@@ -36,7 +48,7 @@ function launchCrawler(baseUrl, siteDomain) {
                                 }
                                 href = `${baseUrl}${href}`;
                             }
-                            if (href && (href.indexOf(siteDomain) > -1) && !urlsCollected.includes(href)) {
+                            if (href && isValidUrl(href) && href.startsWith(baseUrl) && !urlsCollected.includes(href)) {
                                 urlsCollected.push(href);
                                 writeToFile(href);
                                 c.queue(href);
@@ -91,7 +103,7 @@ const runCrawler = (siteUrl, urlSaveFile) => {
         }
 
         const tstamp = new Date().toISOString().replace(/:/g, '-');
-        const resultFolderPath = `./crawls/${siteDomain}/${tstamp}/`;
+        const resultFolderPath = `../crawls/${siteDomain}/${tstamp}/`;
         fs.promises
             .mkdir(resultFolderPath, { recursive: true })
             .then(async () => {
@@ -112,6 +124,7 @@ const runCrawler = (siteUrl, urlSaveFile) => {
     }
 };
 
+// TODO: Could be moved elsewhere
 exports.launch = (() => {
     let validArgs = true;
     const argv = minimist(process.argv.slice(2));
