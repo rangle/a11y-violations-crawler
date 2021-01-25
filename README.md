@@ -38,3 +38,4 @@ Example: `node checker.js --crawlFilePath /Users/magalibautista/workspace/rangle
 - decide on a frontend framework to display the results?
 - the category tags ideally should link to their respective rules
 - be able to further filter the urls that will be saved in the crawl result file
+- allow a user to upload a sitemap-type file to bypass crawling (FUTURE)
