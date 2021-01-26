@@ -8,4 +8,7 @@ a {
 .show {
   display: block !important; }
 
+.hidden {
+  display: none; }
+
 /*# sourceMappingURL=style.css.map */
