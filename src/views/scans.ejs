@@ -6,16 +6,16 @@
         <title>A11y Crawler POC</title>
         <meta name="description" content="POC to run the a11y crawler, and display the results in a user-friendly way.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mini.css/3.0.1/mini-default.min.css">
+        <link rel="stylesheet" href="/stylesheets/tailwind.css">
         <link rel="stylesheet" href="/stylesheets/style.css">
     </head>
     <body>
-        <a href="../">Go Back</a>
-        <h1>A11Y POC</h1>
-        <h2>Available Scan Results for <%=siteName %></h2>
-        <ul>
+        <a class="text-blue-600 mb-3 block" href="../">Go Back</a>
+        <h1 class="text-3xl">A11Y POC</h1>
+        <h2 class="text-2xl">Available Scan Results for <%=siteName %></h2>
+        <ul class="mt-3">
           <% dirs.forEach(dir=>{ %>
-            <li><a href="./<%=dir %>"><%=dir %></a></li>
+            <li class="leading-6"><a class="text-blue-600" href="./<%=dir %>"><%=dir %></a></li>
             <%}) %>
         </ul>
     </body>
