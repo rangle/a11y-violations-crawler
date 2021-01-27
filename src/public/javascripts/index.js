@@ -10,10 +10,9 @@
             credentials: 'same-origin', // include, *same-origin, omit
             headers: {
                 'Content-Type': 'application/json'
-                // 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            redirect: 'follow', // manual, *follow, error
-            referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+            redirect: 'follow',
+            referrerPolicy: 'no-referrer',
             body: JSON.stringify(data) // body data type must match "Content-Type" header
         });
         return response.json(); // parses JSON response into native JavaScript objects
@@ -26,12 +25,17 @@
         console.log(e);
         const siteUrl = document.getElementById('site-url').value;
 
+        if (siteUrl === '') {
+            return;
+        }
+        document.getElementById('progress-message').classList.add('show');
+        document.getElementById('site-url').value = '';
+
         postData('/launch', { siteUrl: siteUrl })
             .then(data => {
                 console.log(data); // JSON data parsed by `data.json()` call
                 if (data && data.result === 'success') {
                     document.getElementById('success-message').classList.add('show');
-                    document.getElementById('site-url').value = '';
                 }
             });
 

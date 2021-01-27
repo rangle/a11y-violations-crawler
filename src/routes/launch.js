@@ -23,8 +23,18 @@ router.post('/', function (req, res, next) {
     console.log('the post request worked!');
     console.log('req: ', req.body.siteUrl);
     // TODO: Need to figure out the path where the file gets saved (right now it's in same folder as the a11y-crawler-poc project)
-    // childProcess.fork(`${path.join(__dirname, '../lib/crawler.js')}`, ['--siteUrl', req.body.siteUrl]); // --siteUrl ${req.body.siteUrl}
-    res.json({ result: 'success' });
+    const crawlProcess = childProcess.spawn('node', [`${path.join(__dirname, '../lib/crawler.js')}`, '--siteUrl', req.body.siteUrl]); // --siteUrl ${req.body.siteUrl}
+
+    crawlProcess.stderr.on('data', (data) => {
+        console.error(`stderr: ${data}`);
+    });
+
+    crawlProcess.on('close', (code) => {
+        console.log(`child process exited with code ${code}`);
+        res.json({ result: 'success' });
+    });
+
+    // res.json({ result: 'success' });
 });
 
 module.exports = router;
