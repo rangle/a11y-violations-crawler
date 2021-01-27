@@ -2,7 +2,7 @@ const Crawler = require('crawler');
 const fs = require('fs');
 const minimist = require('minimist');
 const { crawlerConfig } = require('./crawler-config');
-
+// TODO: accept parameter of saveFile location.
 let crawledFileStream = null;
 const appArgumentsDesc = `
   Usage: node crawler.js --siteUrl <name> [--saveFile <path>]
