@@ -34,7 +34,6 @@ Example: `node checker.js --crawlFilePath /Users/magalibautista/workspace/rangle
 
 ## TODOs
 - allow more parameters to be passed to the axe core library for different kinds of scans
-- update the script so that puppeteer does both the crawling and scanning at the same time? (I don't recommend as the node-crawler is built for that specific purpose)
 - decide on a frontend framework to display the results? (Tentative: React)
-- replace mini-css with tailwind css
 - allow a user to upload a sitemap-type file to bypass crawling (FUTURE)
+- make the front-end prettier
