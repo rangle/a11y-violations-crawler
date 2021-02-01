@@ -120,10 +120,10 @@ const runChecker = (crawlFilePath, filePrefix) => {
     const folderName = fileName[0].replace('.txt', '');
 
     summaryData.siteUrl = folderName; // TODO: this may not always be the hostname
-    console.log('folderName: ', folderName);
+    // console.log('folderName: ', folderName);
     // create a folder that is timestamped
     const tstamp = new Date().toISOString().replace(/:/g, '-');
-    const resultFolderPath = `../public/scans/${folderName}/${tstamp}/`;
+    const resultFolderPath = `./src/public/scans/${folderName}/${tstamp}/`;
     fs.promises
       .mkdir(resultFolderPath, { recursive: true })
       .then(async () => {
@@ -139,12 +139,12 @@ const runChecker = (crawlFilePath, filePrefix) => {
 };
 
 // TODO: Could be moved elsewhere
-exports.launch = (() => {
+exports.launch = (passedCrawlFilePath, passedFilePrefix) => {
   let validArgs = true;
   const argv = minimist(process.argv.slice(2));
 
-  const crawlFilePath = argv.crawlFilePath;
-  const filePrefix = argv.filePrefix;
+  const crawlFilePath = argv.crawlFilePath || passedCrawlFilePath;
+  const filePrefix = argv.filePrefix || passedFilePrefix;
 
   if (
     crawlFilePath === undefined ||
@@ -158,4 +158,4 @@ exports.launch = (() => {
   } else {
     console.log(appArgumentsDesc);
   }
-})();
+};

@@ -2,15 +2,21 @@ const Crawler = require('crawler');
 const fs = require('fs');
 const minimist = require('minimist');
 const { crawlerConfig } = require('./crawler-config');
+const checker = require('./checker');
 
 let crawledFileStream = null;
+let autoScan = false;
+let saveFilePath = '';
+let domainFolderName = '';
+
 const appArgumentsDesc = `
-  Usage: node crawler.js --siteUrl <name> [--saveFile <path>]
+  Usage: node crawler.js --siteUrl <name> [--saveFile <path>] --autoScan
   
   Arguments:
   
-  siteUrl <URL>  (url provided for the crawling - no trailing slashes ie. https://www.facebook.com)
-  saveFile <path>  (optional) (path where the url text file will be saved) defaults to url hostname
+  siteUrl <URL>     (url provided for the crawling - no trailing slashes ie. https://www.facebook.com)
+  saveFile <path>   (optional) (path where the url text file will be saved) defaults to url hostname
+  autoScan          (optional) launches the scanning portion right after a successful crawl
 `;
 
 const urlsCollected = [];
@@ -78,6 +84,11 @@ function launchCrawler(baseUrl, siteDomain) {
                     console.log('Closing the filestream...');
                     crawledFileStream.end(() => {
                         console.log('Crawling completed.');
+
+                        if (autoScan) {
+                            console.log('autoScan enabled. Will begin scanning.');
+                            checker.launch(saveFilePath, domainFolderName);
+                        }
                     });
                 }
             }, 10000)
@@ -103,12 +114,13 @@ const runCrawler = (siteUrl, urlSaveFile) => {
         }
 
         const tstamp = new Date().toISOString().replace(/:/g, '-');
-        const resultFolderPath = `../crawls/${siteDomain}/${tstamp}/`;
+        const resultFolderPath = `./src/crawls/${siteDomain}/${tstamp}/`;
+        domainFolderName = urlSaveFile;
+        saveFilePath = `${resultFolderPath + urlSaveFile}.txt`;
         fs.promises
             .mkdir(resultFolderPath, { recursive: true })
             .then(async () => {
-
-                crawledFileStream = fs.createWriteStream(`${resultFolderPath + urlSaveFile}.txt`, { flags: 'a' });
+                crawledFileStream = fs.createWriteStream(saveFilePath, { flags: 'a' });
                 crawledFileStream.on('error', function (err) { throw err; });
 
                 launchCrawler(siteUrl, siteDomain);
@@ -131,6 +143,7 @@ exports.launch = (() => {
 
     const siteUrl = argv.siteUrl;
     const urlSaveFile = argv.saveFile;
+    autoScan = argv.autoScan;
 
     if (siteUrl === undefined) {
         validArgs = false;
