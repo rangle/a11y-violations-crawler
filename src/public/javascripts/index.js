@@ -23,7 +23,9 @@
         e.preventDefault();
         console.log('submit clicked');
         console.log(e);
+        let launchScan = false;
         const siteUrl = document.getElementById('site-url').value;
+        launchScan = document.getElementById('auto-scan').checked;
 
         if (siteUrl === '') {
             return;
@@ -31,7 +33,7 @@
         document.getElementById('progress-message').classList.add('show');
         document.getElementById('site-url').value = '';
 
-        postData('/launch', { siteUrl: siteUrl })
+        postData('/launch', { siteUrl: siteUrl, autoScan: launchScan })
             .then(data => {
                 console.log(data); // JSON data parsed by `data.json()` call
                 if (data && data.result === 'success') {
@@ -42,7 +44,6 @@
 
     };
 
-    console.log('adding evt listener');
     document.getElementById('scan-launch-btn').addEventListener('click', buttonClick);
 
 
