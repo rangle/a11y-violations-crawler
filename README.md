@@ -12,7 +12,16 @@ Created using node v13.8
 
 Run npm install from the ./src folder
 
-## Running the crawler
+## Running the crawler/checker from the browser
+
+- `npm run start` from the ./src folder
+- navigated to localhost:3000
+- on the homepage, there will be a small form to launch a scan
+- enter the url and if you want to scan as well, check the box
+- press the submit button
+- refresh once the scanning is completed
+
+## Running the crawler from the command line
 - CD into the src/lib folder
 
 node crawler.js --siteUrl `<URL>` [--saveFile <string>]
@@ -22,7 +31,7 @@ node crawler.js --siteUrl `<URL>` [--saveFile <string>]
 
 Example call: `node crawler.js --siteUrl https://www.yahoo.ca`
 
-## Running the Puppeteer checker
+## Running the Puppeteer checker from the command line
 - CD into the src/lib folder
 
 node checker.js --crawlFilePath `<string>` --filePrefix `<string>`
@@ -37,3 +46,4 @@ Example: `node checker.js --crawlFilePath /Users/magalibautista/workspace/rangle
 - decide on a frontend framework to display the results? (Tentative: React)
 - allow a user to upload a sitemap-type file to bypass crawling (FUTURE)
 - make the front-end prettier
+- ensure there is no timeout when launching scan from the frontend (long polling?)
