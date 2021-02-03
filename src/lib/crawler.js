@@ -87,7 +87,8 @@ function launchCrawler(baseUrl, siteDomain) {
 
                         if (autoScan) {
                             console.log('autoScan enabled. Will begin scanning.');
-                            checker.launch(saveFilePath, domainFolderName);
+                            // TODO: Find a cleaner way to do this.
+                            checker.launch(saveFilePath, domainFolderName.replace('www.', ''));
                         }
                     });
                 }

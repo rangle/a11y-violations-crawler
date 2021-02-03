@@ -4,6 +4,8 @@ const fs = require('fs');
 const readline = require('readline');
 const minimist = require('minimist');
 
+const DEFAULT_SAVE_PATH = './src/public/scans/';
+
 const summaryData = {
   siteUrl: '',
   totalViolations: 0,
@@ -17,12 +19,14 @@ const summaryData = {
 };
 const getSiteSummary = true;
 const appArgumentsDesc = `
-  Usage: node checker.js --crawlFilePath <string> --filePrefix <string>
+  Usage: node checker.js --crawlFilePath <string> --filePrefix <string> --saveFilePath <string> --hostName <string>
   
   Arguments:
   
   crawlFilePath <string>  (path of the file containing urls to scan)
   filePrefix    <string>  prefix for the generated json files
+  saveFilePath  <string>  path where to create the timestamped folder
+  hostName      <string>  hostname of the website that will be scanned
 `;
 
 const launchScan = async (crawlFilePath, resultFolderPath, filePrefix) => {
@@ -113,17 +117,25 @@ const injectAxe = (page) => {
   `);
 };
 
-const runChecker = (crawlFilePath, filePrefix) => {
-  try {
-    const pathParts = crawlFilePath.split('/');
-    const fileName = pathParts.slice(-1);
-    const folderName = fileName[0].replace('.txt', '');
+const getResultsFolderPath = (saveFilePath) => {
 
-    summaryData.siteUrl = folderName; // TODO: this may not always be the hostname
+
+
+  return pathToResultsFolder;
+}
+
+// TODO: Rename this function
+const runChecker = (crawlFilePath, filePrefix, saveFilePath, siteHostName) => {
+  try {
+
+    const hostName = siteHostName ? siteHostName.replace('.txt', '') : crawlFilePath.split('/').slice(-1)[0].replace('.txt', '');
+    const pathToResultsFolder = saveFilePath ? `${saveFilePath}${hostName}` : `${DEFAULT_SAVE_PATH}${hostName}`;
+    summaryData.siteUrl = hostName; // TODO: this may not always be the hostname
+
     // console.log('folderName: ', folderName);
     // create a folder that is timestamped
     const tstamp = new Date().toISOString().replace(/:/g, '-');
-    const resultFolderPath = `./src/public/scans/${folderName}/${tstamp}/`;
+    const resultFolderPath = `${pathToResultsFolder}/${tstamp}/`;
     fs.promises
       .mkdir(resultFolderPath, { recursive: true })
       .then(async () => {
@@ -138,13 +150,12 @@ const runChecker = (crawlFilePath, filePrefix) => {
   }
 };
 
-// TODO: Could be moved elsewhere
-exports.launch = (passedCrawlFilePath, passedFilePrefix) => {
+exports.launch = (passedCrawlFilePath, passedFilePrefix, passedResultSavePath) => {
   let validArgs = true;
-  const argv = minimist(process.argv.slice(2));
 
-  const crawlFilePath = argv.crawlFilePath || passedCrawlFilePath;
-  const filePrefix = argv.filePrefix || passedFilePrefix;
+  const crawlFilePath = passedCrawlFilePath;
+  const filePrefix = passedFilePrefix;
+  const saveFilePath = passedResultSavePath;
 
   if (
     crawlFilePath === undefined ||
@@ -154,8 +165,31 @@ exports.launch = (passedCrawlFilePath, passedFilePrefix) => {
   }
 
   if (validArgs) {
-    runChecker(crawlFilePath, filePrefix);
+    runChecker(crawlFilePath, filePrefix, saveFilePath, null);
   } else {
     console.log(appArgumentsDesc);
   }
 };
+
+(() => {
+  let validArgs = true;
+  const argv = minimist(process.argv.slice(2));
+
+  const crawlFilePath = argv.crawlFilePath;
+  const filePrefix = argv.filePrefix;
+  const saveFilePath = argv.saveFilePath;
+  const hostName = argv.hostName;
+
+  if (
+    crawlFilePath === undefined ||
+    filePrefix === undefined
+  ) {
+    validArgs = false;
+  }
+
+  if (validArgs) {
+    runChecker(crawlFilePath, filePrefix, saveFilePath, hostName);
+  } else {
+    console.log(appArgumentsDesc);
+  }
+})();

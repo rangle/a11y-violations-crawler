@@ -44,6 +44,29 @@ Example: `node checker.js --crawlFilePath /Users/magalibautista/workspace/rangle
 ## TODOs
 - allow more parameters to be passed to the axe core library for different kinds of scans
 - decide on a frontend framework to display the results? (Tentative: React)
-- allow a user to upload a sitemap-type file to bypass crawling (FUTURE)
+- allow a user to upload a sitemap-type file to bypass crawling (FUTURE) **
 - make the front-end prettier
 - ensure there is no timeout when launching scan from the frontend (long polling?)
+
+## Notes
+- monorepo, with separate packages
+- 1 backend service, 1 frontend service ** (separation of concerns)
+- could become mini saas application
+
+- /public should be outside of /src
+- make sure ./scans folder exists (or create it) . (use makedirp module)
+- files should be stored outside of /src
+- add an option to run Puppeteer headless (flag or dev environment var)
+- progress bar (via sockets) (or you can notify the user - via email)
+- potentially generate partial results right away
+
+- ability to configure which pages to scan (a created/curated list - json file, or xml to be converted) **
+-- go through critical pages
+
+- how do we know when a page has loaded? 
+
+- check why google.com keeps looping and if we can prevent that?
+
+- ** FRONT END MUST BE ACCESSIBLE **
+
+- could Cypress replace Puppeteer?
