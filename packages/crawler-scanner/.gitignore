@@ -1,0 +1,4 @@
+src/crawls/
+src/public/scans/
+src/public/data/
+node_modules/

@@ -1,5 +1,2 @@
 node_modules/
-src/crawls/
-src/public/scans/
-src/public/data/
 .DS_Store
