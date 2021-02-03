@@ -65,7 +65,6 @@ const launchScan = async (crawlFilePath, resultFolderPath, filePrefix) => {
 const generateSiteSummary = (resultFolderPath) => {
   const summaryFile = `${resultFolderPath}summary.json`;
   const data = JSON.stringify(summaryData);
-  // console.log('siteSummary: ', data);
   fs.writeFileSync(summaryFile, data);
 };
 
@@ -117,22 +116,14 @@ const injectAxe = (page) => {
   `);
 };
 
-const getResultsFolderPath = (saveFilePath) => {
-
-
-
-  return pathToResultsFolder;
-}
-
 // TODO: Rename this function
-const runChecker = (crawlFilePath, filePrefix, saveFilePath, siteHostName) => {
+const createFoldersAndRunChecker = (crawlFilePath, filePrefix, saveFilePath, siteHostName) => {
   try {
 
     const hostName = siteHostName ? siteHostName.replace('.txt', '') : crawlFilePath.split('/').slice(-1)[0].replace('.txt', '');
     const pathToResultsFolder = saveFilePath ? `${saveFilePath}${hostName}` : `${DEFAULT_SAVE_PATH}${hostName}`;
     summaryData.siteUrl = hostName; // TODO: this may not always be the hostname
 
-    // console.log('folderName: ', folderName);
     // create a folder that is timestamped
     const tstamp = new Date().toISOString().replace(/:/g, '-');
     const resultFolderPath = `${pathToResultsFolder}/${tstamp}/`;
@@ -150,29 +141,23 @@ const runChecker = (crawlFilePath, filePrefix, saveFilePath, siteHostName) => {
   }
 };
 
-exports.launch = (passedCrawlFilePath, passedFilePrefix, passedResultSavePath) => {
-  let validArgs = true;
+const areArgsValid = (crawlFilePath, filePrefix) => {
+  return crawlFilePath !== undefined &&
+    filePrefix !== undefined;
+}
 
+exports.launch = (passedCrawlFilePath, passedFilePrefix) => {
   const crawlFilePath = passedCrawlFilePath;
   const filePrefix = passedFilePrefix;
-  const saveFilePath = passedResultSavePath;
 
-  if (
-    crawlFilePath === undefined ||
-    filePrefix === undefined
-  ) {
-    validArgs = false;
-  }
-
-  if (validArgs) {
-    runChecker(crawlFilePath, filePrefix, saveFilePath, null);
+  if (areArgsValid(crawlFilePath, filePrefix)) {
+    createFoldersAndRunChecker(crawlFilePath, filePrefix);
   } else {
     console.log(appArgumentsDesc);
   }
 };
 
 (() => {
-  let validArgs = true;
   const argv = minimist(process.argv.slice(2));
 
   const crawlFilePath = argv.crawlFilePath;
@@ -180,15 +165,8 @@ exports.launch = (passedCrawlFilePath, passedFilePrefix, passedResultSavePath) =
   const saveFilePath = argv.saveFilePath;
   const hostName = argv.hostName;
 
-  if (
-    crawlFilePath === undefined ||
-    filePrefix === undefined
-  ) {
-    validArgs = false;
-  }
-
-  if (validArgs) {
-    runChecker(crawlFilePath, filePrefix, saveFilePath, hostName);
+  if (areArgsValid(crawlFilePath, filePrefix)) {
+    createFoldersAndRunChecker(crawlFilePath, filePrefix, saveFilePath, hostName);
   } else {
     console.log(appArgumentsDesc);
   }

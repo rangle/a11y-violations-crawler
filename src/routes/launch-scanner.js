@@ -14,7 +14,7 @@ const logger = winston.createLogger({
 });
 
 router.post('/', upload.single('results-file'), function (req, res, next) {
-    const a11yCheckerProcess = childProcess.spawn('node', [`${path.join(__dirname, '../lib/checker.js')}`, '--crawlFilePath', path.join(__dirname, `../public/data/uploads/${req.file.filename}`), '--filePrefix', req.body.filePrefix, '--saveFilePath', path.join(__dirname, '../public/scans/'), '--hostName', req.file.originalname]); // ${req.file.filename}
+    const a11yCheckerProcess = childProcess.spawn('node', [`${path.join(__dirname, '../lib/checker.js')}`, '--crawlFilePath', path.join(__dirname, `../public/data/uploads/${req.file.filename}`), '--filePrefix', req.body.filePrefix, '--saveFilePath', path.join(__dirname, '../public/scans/'), '--hostName', req.file.originalname]);
 
     a11yCheckerProcess.stderr.on('data', (data) => {
         logger.error(`stderr: ${data}`);
