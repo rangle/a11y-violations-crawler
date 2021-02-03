@@ -2,6 +2,12 @@ var express = require('express');
 var router = express.Router();
 var path = require('path');
 var fs = require('fs');
+const winston = require('winston');
+const logger = winston.createLogger({
+    transports: [
+        new winston.transports.Console()
+    ]
+});
 
 router.get('/', function (req, res, next) {
     res.redirect('/');
@@ -11,7 +17,7 @@ router.get('/', function (req, res, next) {
 router.get('/:siteName', function (req, res, next) {
     fs.readdir(path.join(__dirname, `../public/scans/${req.params.siteName}`), (err, files) => {
         if (err) {
-            console.log('fs error? ', err);
+            logger.error('fs error? ', err);
         }
         const resultDirs = files.filter(f => f !== '.DS_Store');
         res.render('scans', { siteName: req.params.siteName, dirs: resultDirs });
@@ -23,11 +29,11 @@ router.get('/:siteName', function (req, res, next) {
 router.get('/:siteName/:scanFolder', function (req, res, next) {
     fs.readFile(path.join(__dirname, `../public/scans/${req.params.siteName}/${req.params.scanFolder}/summary.json`), (err, data) => {
         if (err) {
-            console.log('fs error? ', err);
+            logger.error('fs error? ', err);
         }
         const parsedData = JSON.parse(data);
 
-        console.log('parsedData: ', parsedData);
+        logger.info('parsedData: ', parsedData);
         res.render('scan-summary', { siteUrl: req.params.siteName, results: parsedData });
     });
 });
@@ -36,11 +42,11 @@ router.get('/:siteName/:scanFolder', function (req, res, next) {
 router.get('/:siteName/:scanFolder/:scanFile', function (req, res, next) {
     fs.readFile(path.join(__dirname, `../public/scans/${req.params.siteName}/${req.params.scanFolder}/${req.params.scanFile}.json`), (err, data) => {
         if (err) {
-            console.log('fs error? ', err);
+            logger.error('fs error? ', err);
         }
         const parsedData = JSON.parse(data);
 
-        console.log('parsedData: ', parsedData);
+        logger.info('parsedData: ', parsedData);
         res.render('scan-details', { siteUrl: req.params.siteName, results: parsedData });
     });
 });

@@ -7,7 +7,8 @@ var sassMiddleware = require('node-sass-middleware');
 
 var indexRouter = require('./routes/index');
 var scansRouter = require('./routes/scans');
-var launchRouter = require('./routes/launch');
+var launchCrawlerRouter = require('./routes/launch-crawler');
+var launchScannerRouter = require('./routes/launch-scanner');
 
 var app = express();
 
@@ -29,12 +30,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/scans', scansRouter);
-app.use('/launch', launchRouter);
+app.use('/launch-crawler', launchCrawlerRouter);
+app.use('/launch-scanner', launchScannerRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
 });
+
+// Ignore the favicon for now
+app.get('/favicon.ico', (req, res) => res.status(204));
 
 // error handler
 app.use(function (err, req, res, next) {
