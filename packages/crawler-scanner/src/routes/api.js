@@ -16,9 +16,8 @@ router.get('/site-results', function (req, res, next) {
             logger.error('fs error? ', err);
         }
         const scanDirs = files.filter(f => f !== '.DS_Store').map(((file, index) => ({ id: index, name: file })));
-        logger.info('what is scanDirs? ', scanDirs);
+        logger.info('what are the found directories? ', scanDirs);
         res.json({ directories: scanDirs });
-        res.end();
     });
 
 });
