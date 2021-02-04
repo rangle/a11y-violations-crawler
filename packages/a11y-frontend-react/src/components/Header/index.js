@@ -14,6 +14,7 @@ const Nav = styled.nav`
 const H1 = styled.h1`
     font-size: 2rem;
     margin: 1rem;
+    font-weight: 100;
 `;
 
 const List = styled.ul`
