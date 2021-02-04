@@ -1,50 +1,50 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import styled from 'styled-components';
+
+const DIRECTORIES_API = 'http://localhost:3001/api/site-results';
+
+const ResultContainer = styled.div`
+    padding: 50px 15px;
+`;
+
+const H2 = styled.h2`
+    font-size: 1.5rem;
+    line-height: 2rem;
+`;
+
+const SiteList = styled.ul`
+    margin-top: 0.75rem;
+`;
+
+const ListItem = styled.li`
+    line-height: 1.5rem;
+`;
 
 const SiteListing = () => {
+    const [directories, setDirectories] = useState([]);
+
+    useEffect(() => {
+        fetchDirectoriesFromAPI();
+    }, []);
+
+    const fetchDirectoriesFromAPI = () => {
+        fetch(DIRECTORIES_API).then(res => res.json()).then(results => {
+            setDirectories(results.directories);
+        }).catch(err => {
+            console.log('error on fetch: ', err);
+        });
+    };
+
     return (
-        <>
-            <div className="container">
-                <h1 className="text-3xl">A11Y POC</h1>
-                <h2 className="text-2xl">Available Scan Results</h2>
-                <ul className="mt-3">
-                    {/* <% dirs.forEach(dir=>{ %>
-                <li className="leading-6"><a className="text-blue-600" href="./scans/<%=dir %>"><%=dir %></a></li>
-                <%}) %> */}
-                </ul>
-            </div>
-
-            <hr className="my-4" />
-            <div className="container flex flex-col">
-                <h2 className="mb-5 text-2xl">Run a New Crawl and Scan</h2>
-                <form className="flex flex-col">
-                    <label className="mb-4">Site Url (Without ending slash "/")
-                        <input className="border border-green-500 rounded-sm p-2 block mt-2" name="site-url" id="site-url" type="url" placeholder="https://example.com" pattern="(http|https)://.*" required></input>
-                    </label>
-                    <label className="mb-4 flex items-center">After crawl completes, start the scan
-                    <input className="ml-2 border-green-500" type="checkbox" id="auto-scan" />
-                    </label>
-                    <input className="cursor-pointer block bg-green-500 p-3 rounded-sm max-w-xs" id="crawl-launch-btn" type="submit" value="Launch Crawler" />
-                </form>
-                <p id="progress-message" className="mt-3 progress hidden">Your Crawl will now begin. It may take up to 30 minutes. Come back and refresh the page for results.</p>
-                <p id="success-message" className="mt-3 success hidden green">The scan has completed. Please refresh the page to see the results.</p>
-            </div>
-
-            <hr className="my-4" />
-            <div className="container flex flex-col">
-                <h2 className="mb-5 text-2xl">Run a New Scan Only</h2>
-                <form className="flex flex-col" id="scan-form">
-                    <label className="mb-4">Upload Your Url Results Text File<br />(Filename should contain the hostname. IE: www.yahoo.ca.txt)
-                    <input className="border border-green-500 rounded-sm p-2 block mt-2" name="results-file" id="results-file" type="file" accept=".txt" required></input>
-                    </label>
-                    <label className="mb-4">File Prefix for Your Scan Files
-                    <input className="border border-green-500 rounded-sm p-2 block mt-2" name="filePrefix" id="filePrefix" type="text" placeholder="example.com" required></input>
-                    </label>
-                    <input className="cursor-pointer block bg-green-500 p-3 rounded-sm max-w-xs" id="scan-launch-btn" type="submit" value="Launch Scan" />
-                </form>
-                <p id="scan-progress-message" className="mt-3 progress hidden">Your Scan will now begin. It may take up to 30 minutes. Come back and refresh the page for results.</p>
-                <p id="scan-success-message" className="mt-3 success hidden green">The scan has completed. Please refresh the page to see the results.</p>
-            </div>
-        </>
+        <ResultContainer>
+            <H2>Available Scan Results</H2>
+            <SiteList>
+                {directories.map(directory =>
+                    <ListItem key={directory.id} aria-label={`View results for ${directory.name}`}><Link className="text-blue-600" to={`./site-results/${directory.name}`}>{directory.name}</Link></ListItem>
+                )}
+            </SiteList>
+        </ResultContainer>
     );
 };
 
