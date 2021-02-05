@@ -46,7 +46,7 @@ router.post('/launch-crawler', function (req, res, next) {
     });
 });
 
-router.post('/launch-scanner', upload.single('results-file'), function (req, res, next) {
+router.post('/launch-scanner', upload.single('resultsFile'), function (req, res, next) {
     const a11yCheckerProcess = childProcess.spawn('node', [`${path.join(__dirname, '../lib/checker.js')}`, '--crawlFilePath', path.join(__dirname, `../public/data/uploads/${req.file.filename}`), '--filePrefix', req.body.filePrefix, '--saveFilePath', path.join(__dirname, '../public/scans/'), '--hostName', req.file.originalname]);
 
     a11yCheckerProcess.stderr.on('data', (data) => {
