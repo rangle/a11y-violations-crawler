@@ -19,6 +19,10 @@ const SiteList = styled.ul`
 
 const ListItem = styled.li`
     line-height: 1.5rem;
+
+    &:hover {
+        text-decoration: underline;
+    }
 `;
 
 const BlueLink = styled(Link)`
