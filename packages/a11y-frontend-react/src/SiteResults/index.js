@@ -1,6 +1,6 @@
 import React from 'react';
 
-const SiteDetails = () => {
+const SiteResults = () => {
     return (
         <>
             <a className="text-blue-600 mb-3 block" href="../">Go Back</a>
@@ -15,4 +15,4 @@ const SiteDetails = () => {
     );
 }
 
-export default SiteDetails;
+export default SiteResults;

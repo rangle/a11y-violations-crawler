@@ -1,16 +1,19 @@
 import SiteListing from './SiteListing';
-import SiteDetails from './SiteDetails';
+import SiteResults from './SiteResults';
 import ScanListing from './ScanListing';
 import ScanDetails from './ScanDetails';
+import Launcher from './Launcher';
+import Header from './components/Header';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
 function App() {
   return (
     <Router>
-      <div className="App">
+      <Header />
+      <main className="App">
         <Switch>
-          <Route path="/site-details">
-            <SiteDetails />
+          <Route path="/site-results">
+            <SiteResults />
           </Route>
           <Route path="/scan-listing">
             <ScanListing />
@@ -18,11 +21,14 @@ function App() {
           <Route path="/scan-details">
             <ScanDetails />
           </Route>
-          <Route path="/">
+          <Route path="/launcher">
+            <Launcher />
+          </Route>
+          <Route path={["/", "/site-listing"]}>
             <SiteListing />
           </Route>
         </Switch>
-      </div>
+      </main>
     </Router>
   );
 }
