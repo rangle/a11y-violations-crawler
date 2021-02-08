@@ -1,0 +1,32 @@
+{
+  "name": "a11y-crawler-poc",
+  "version": "1.0.0",
+  "description": "An accessibility crawler",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "react-client": "yarn workspace a11y-frontend-react start",
+    "server": "yarn workspace a11y-crawler start",
+    "start": "concurrently --kill-others-on-fail --names \"express,react\" -p name --prefix-colors \"yellow,cyan\" \"yarn server\"  \"yarn react-client\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rangle/a11y-violations-crawler.git"
+  },
+  "keywords": [
+    "a11y",
+    "node",
+    "react"
+  ],
+  "author": "Rangle.io",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rangle/a11y-violations-crawler/issues"
+  },
+  "homepage": "https://github.com/rangle/a11y-violations-crawler#readme",
+  "dependencies": {
+    "concurrently": "^5.3.0"
+  }
+}
