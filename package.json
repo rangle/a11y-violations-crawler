@@ -2,13 +2,14 @@
   "name": "a11y-crawler-poc",
   "version": "1.0.0",
   "description": "An accessibility crawler",
+  "private": true,
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
-    "start": "run-p start-server start-react",
-    "start-react": "cd ./packages/a11y-frontend-react/ && react-scripts start",
-    "start-server": "node ./packages/crawler-scanner/src/bin/www"
+    "react-client": "yarn workspace a11y-frontend-react start",
+    "server": "yarn workspace a11y-crawler start",
+    "start": "concurrently --kill-others-on-fail --names \"express,react\" -p name \"yarn server\"  \"yarn react-client\""
   },
   "repository": {
     "type": "git",
@@ -26,6 +27,7 @@
   },
   "homepage": "https://github.com/rangle/a11y-violations-crawler#readme",
   "dependencies": {
+    "concurrently": "^5.3.0",
     "npm-run-all": "^4.1.5"
   }
 }
