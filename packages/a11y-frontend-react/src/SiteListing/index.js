@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
-const DIRECTORIES_API = 'http://localhost:3001/api/site-results';
+const GET_DIRECTORIES_API = 'http://localhost:3001/api/site-results';
 
 const ResultContainer = styled.div`
     padding: 50px 15px;
@@ -19,6 +19,14 @@ const SiteList = styled.ul`
 
 const ListItem = styled.li`
     line-height: 1.5rem;
+
+    &:hover {
+        text-decoration: underline;
+    }
+`;
+
+const BlueLink = styled(Link)`
+    color: rgba(37,99,235,1);
 `;
 
 const SiteListing = () => {
@@ -29,7 +37,7 @@ const SiteListing = () => {
     }, []);
 
     const fetchDirectoriesFromAPI = () => {
-        fetch(DIRECTORIES_API).then(res => res.json()).then(results => {
+        fetch(GET_DIRECTORIES_API).then(res => res.json()).then(results => {
             setDirectories(results.directories);
         }).catch(err => {
             console.log('error on fetch: ', err);
@@ -41,7 +49,7 @@ const SiteListing = () => {
             <H2>Available Scan Results</H2>
             <SiteList>
                 {directories.map(directory =>
-                    <ListItem key={directory.id} aria-label={`View results for ${directory.name}`}><Link className="text-blue-600" to={`./site-results/${directory.name}`}>{directory.name}</Link></ListItem>
+                    <ListItem key={directory.id} aria-label={`View results for ${directory.name}`}><BlueLink to={`./site-results/${directory.name}`}>{directory.name}</BlueLink></ListItem>
                 )}
             </SiteList>
         </ResultContainer>
