@@ -8,21 +8,20 @@ Create a tool that involves:
 
 ## Installation
 POC is using npm, expressjs
-Created using node v13.8
+Created using node v12
 
-Run npm install from the ./src folder
+Run `yarn` from the root folder
 
-## Running the crawler/checker from the browser
+## Running the crawler/checker from the browser (Via React Frontend)
 
-- `npm run start` from the ./src folder
-- navigated to localhost:3000
+- navigate to localhost:3000
 - on the homepage, there will be a small form to launch a scan
 - enter the url and if you want to scan as well, check the box
 - press the submit button
 - refresh once the scanning is completed
 
 ## Running the crawler from the command line
-- CD into the src/lib folder
+- CD into the packages/crawler-scanner/src/lib folder
 
 node crawler.js --siteUrl `<URL>` [--saveFile <string>]
 
@@ -32,7 +31,7 @@ node crawler.js --siteUrl `<URL>` [--saveFile <string>]
 Example call: `node crawler.js --siteUrl https://www.yahoo.ca`
 
 ## Running the Puppeteer checker from the command line
-- CD into the src/lib folder
+- CD into the packages/crawler-scanner/src/lib folder
 
 node checker.js --crawlFilePath `<string>` --filePrefix `<string>`
 
@@ -43,25 +42,19 @@ Example: `node checker.js --crawlFilePath /Users/magalibautista/workspace/rangle
 
 ## TODOs
 - allow more parameters to be passed to the axe core library for different kinds of scans
-- decide on a frontend framework to display the results? (Tentative: React)
+- add an option to run Puppeteer headless (flag or dev environment var)
 - allow a user to upload a sitemap-type file to bypass crawling (FUTURE) **
 - make the front-end prettier
 - ensure there is no timeout when launching scan from the frontend (long polling?)
+- progress bar (via sockets) (or you can notify the user - via email)
+- potentially generate partial results right away
 
 ## Notes
-- monorepo, with separate packages
-- 1 backend service, 1 frontend service ** (separation of concerns)
 - could become mini saas application
 
 - /public should be outside of /src
 - make sure ./scans folder exists (or create it) . (use makedirp module)
 - files should be stored outside of /src
-- add an option to run Puppeteer headless (flag or dev environment var)
-- progress bar (via sockets) (or you can notify the user - via email)
-- potentially generate partial results right away
-
-- ability to configure which pages to scan (a created/curated list - json file, or xml to be converted) **
--- go through critical pages
 
 - how do we know when a page has loaded? 
 
