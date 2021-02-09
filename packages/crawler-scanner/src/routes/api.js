@@ -5,8 +5,13 @@ var fs = require('fs');
 const multer = require('multer');
 const childProcess = require('child_process');
 const { cwd } = require('process');
+
+const scansFolderPath = '/public/scans';
+const uploadsFolderPath = '/public/data/uploads/';
+const libFolderPath = '/src/lib/';
+
 const upload = multer({
-    dest: path.join(cwd(), '/public/data/uploads/')
+    dest: path.join(cwd(), uploadsFolderPath)
 });
 var winston = require('winston');
 const logger = winston.createLogger({
@@ -17,7 +22,7 @@ const logger = winston.createLogger({
 
 /* GET home page. */
 router.get('/site-results', function (req, res, next) {
-    fs.readdir(path.join(__dirname, '../public/scans/'), (err, files) => {
+    fs.readdir(path.join(cwd(), scansFolderPath), (err, files) => {
         if (err) {
             logger.error('fs error? ', err);
         }
@@ -29,7 +34,10 @@ router.get('/site-results', function (req, res, next) {
 });
 
 router.post('/launch-crawler', function (req, res, next) {
-    const a11yLauncherProcess = childProcess.spawn('node', [`${path.join(__dirname, '../lib/crawler.js')}`, '--siteUrl', req.body.siteUrl, req.body.autoScan ? '--autoScan' : '']); // --siteUrl ${req.body.siteUrl}
+    const a11yLauncherProcess = childProcess.spawn('node', [
+        path.join(cwd(), `${libFolderPath}crawler.js`),
+        '--siteUrl', req.body.siteUrl,
+        req.body.autoScan ? '--autoScan' : '']);
 
     a11yLauncherProcess.stderr.on('data', (data) => {
         logger.error(`stderr: ${data}`);
@@ -48,7 +56,16 @@ router.post('/launch-crawler', function (req, res, next) {
 });
 
 router.post('/launch-scanner', upload.single('resultsFile'), function (req, res, next) {
-    const a11yCheckerProcess = childProcess.spawn('node', [`${path.join(__dirname, '../lib/checker.js')}`, '--crawlFilePath', path.join(__dirname, `../public/data/uploads/${req.file.filename}`), '--filePrefix', req.body.filePrefix, '--saveFilePath', path.join(__dirname, '../public/scans/'), '--hostName', req.file.originalname]);
+    const a11yCheckerProcess = childProcess.spawn('node', [
+        path.join(cwd(), `${libFolderPath}checker.js`),
+        '--crawlFilePath',
+        path.join(cwd(), `${uploadsFolderPath}${req.file.filename}`),
+        '--filePrefix',
+        req.body.filePrefix,
+        '--saveFilePath',
+        path.join(cwd(), scansFolderPath),
+        '--hostName',
+        req.file.originalname]);
 
     a11yCheckerProcess.stderr.on('data', (data) => {
         logger.error(`stderr: ${data}`);

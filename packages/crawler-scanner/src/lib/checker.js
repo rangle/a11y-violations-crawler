@@ -129,7 +129,7 @@ const createFoldersAndRunChecker = (crawlFilePath, filePrefix, saveFilePath, sit
     // create a folder that is timestamped
     const tstamp = new Date().toISOString().replace(/:/g, '-');
     const resultFolderPath = `${pathToResultsFolder}/${tstamp}/`;
-    console.log('what is result Folder Path for scans: ', resultFolderPath);
+
     fs.promises
       .mkdir(resultFolderPath, { recursive: true })
       .then(async () => {

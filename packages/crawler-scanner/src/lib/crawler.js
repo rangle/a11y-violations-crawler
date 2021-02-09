@@ -122,7 +122,6 @@ const runCrawler = (siteUrl, urlSaveFile) => {
         domainFolderName = urlSaveFile;
         saveFilePath = path.join(resultFolderPath, `${urlSaveFile}.txt`);
 
-        console.log('crawler: saveFilePath: ', saveFilePath);
         fs.promises
             .mkdir(resultFolderPath, { recursive: true })
             .then(async () => {

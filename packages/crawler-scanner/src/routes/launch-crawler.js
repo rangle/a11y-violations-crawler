@@ -2,17 +2,24 @@ const express = require('express');
 const router = express.Router();
 const path = require('path');
 const childProcess = require('child_process');
-
-const winston = require('winston');
 const { cwd } = require('process');
+const winston = require('winston');
+
 const logger = winston.createLogger({
     transports: [
         new winston.transports.Console()
     ]
 });
 
+const libFolderPath = '/src/lib/';
+
 router.post('/', function (req, res, next) {
-    const a11yLauncherProcess = childProcess.spawn('node', [`${path.join(cwd(), '/src/lib/crawler.js')}`, '--siteUrl', req.body.siteUrl, req.body.autoScan ? '--autoScan' : '']); // --siteUrl ${req.body.siteUrl}
+    const a11yLauncherProcess = childProcess.spawn('node', [
+        path.join(cwd(),
+            `${libFolderPath}crawler.js`),
+        '--siteUrl',
+        req.body.siteUrl,
+        req.body.autoScan ? '--autoScan' : '']);
 
     a11yLauncherProcess.stderr.on('data', (data) => {
         logger.error(`stderr: ${data}`);
