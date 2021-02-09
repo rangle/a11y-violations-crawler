@@ -1,4 +1,4 @@
-src/crawls/
-src/public/scans/
-src/public/data/
+public/crawls/
+public/scans/
+public/data/
 node_modules/
