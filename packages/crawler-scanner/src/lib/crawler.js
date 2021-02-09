@@ -3,6 +3,9 @@ const fs = require('fs');
 const minimist = require('minimist');
 const { crawlerConfig } = require('./crawler-config');
 const checker = require('./checker');
+const path = require('path');
+const { cwd } = require('process');
+const crawlFolderBase = path.join(cwd(), './public/crawls/');
 
 let crawledFileStream = null;
 let autoScan = false;
@@ -115,9 +118,10 @@ const runCrawler = (siteUrl, urlSaveFile) => {
         }
 
         const tstamp = new Date().toISOString().replace(/:/g, '-');
-        const resultFolderPath = `./src/crawls/${siteDomain}/${tstamp}/`;
+        const resultFolderPath = path.join(crawlFolderBase, `${siteDomain}/${tstamp}/`);
         domainFolderName = urlSaveFile;
-        saveFilePath = `${resultFolderPath + urlSaveFile}.txt`;
+        saveFilePath = path.join(resultFolderPath, `${urlSaveFile}.txt`);
+
         fs.promises
             .mkdir(resultFolderPath, { recursive: true })
             .then(async () => {

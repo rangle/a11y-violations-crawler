@@ -3,8 +3,10 @@ const axeCore = require('axe-core');
 const fs = require('fs');
 const readline = require('readline');
 const minimist = require('minimist');
+const path = require('path');
+const { cwd } = require('process');
 
-const DEFAULT_SAVE_PATH = './src/public/scans/';
+const DEFAULT_SAVE_PATH = path.join(cwd(), '/public/scans/');
 
 const summaryData = {
   siteUrl: '',
@@ -63,7 +65,7 @@ const launchScan = async (crawlFilePath, resultFolderPath, filePrefix) => {
 // violation types
 // Create JSON with violation count, and url -> json result mapping
 const generateSiteSummary = (resultFolderPath) => {
-  const summaryFile = `${resultFolderPath}summary.json`;
+  const summaryFile = path.join(resultFolderPath, 'summary.json');
   const data = JSON.stringify(summaryData);
   fs.writeFileSync(summaryFile, data);
 };
@@ -127,6 +129,7 @@ const createFoldersAndRunChecker = (crawlFilePath, filePrefix, saveFilePath, sit
     // create a folder that is timestamped
     const tstamp = new Date().toISOString().replace(/:/g, '-');
     const resultFolderPath = `${pathToResultsFolder}/${tstamp}/`;
+
     fs.promises
       .mkdir(resultFolderPath, { recursive: true })
       .then(async () => {

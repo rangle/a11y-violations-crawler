@@ -21,6 +21,10 @@ Run `yarn` from the root folder
 - refresh once the scanning is completed
 
 ## Running the crawler from the command line
+
+Running this will launch the node-crawler and crawl the url you have provided.
+It will generate a txt result file with all the valid urls found.
+
 - CD into the packages/crawler-scanner/src/lib folder
 
 node crawler.js --siteUrl `<URL>` [--saveFile <string>]
@@ -31,6 +35,11 @@ node crawler.js --siteUrl `<URL>` [--saveFile <string>]
 Example call: `node crawler.js --siteUrl https://www.yahoo.ca`
 
 ## Running the Puppeteer checker from the command line
+
+Running this will launch the puppeteer axe checker. It will read the txt result
+file generated in the crawl, and generate JSON result files listing out all the 
+accessibility violations for each URL.
+
 - CD into the packages/crawler-scanner/src/lib folder
 
 node checker.js --crawlFilePath `<string>` --filePrefix `<string>`
@@ -51,15 +60,10 @@ Example: `node checker.js --crawlFilePath /Users/magalibautista/workspace/rangle
 
 ## Notes
 - could become mini saas application
-
 - /public should be outside of /src
 - make sure ./scans folder exists (or create it) . (use makedirp module)
 - files should be stored outside of /src
-
 - how do we know when a page has loaded? 
-
 - check why google.com keeps looping and if we can prevent that?
-
 - ** FRONT END MUST BE ACCESSIBLE **
-
 - could Cypress replace Puppeteer?
