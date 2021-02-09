@@ -4,8 +4,9 @@ var path = require('path');
 var fs = require('fs');
 const multer = require('multer');
 const childProcess = require('child_process');
+const { cwd } = require('process');
 const upload = multer({
-    dest: './src/public/data/uploads/'
+    dest: path.join(cwd(), '/public/data/uploads/')
 });
 var winston = require('winston');
 const logger = winston.createLogger({

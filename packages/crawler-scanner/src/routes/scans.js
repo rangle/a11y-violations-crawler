@@ -3,6 +3,7 @@ var router = express.Router();
 var path = require('path');
 var fs = require('fs');
 const winston = require('winston');
+const { cwd } = require('process');
 const logger = winston.createLogger({
     transports: [
         new winston.transports.Console()
@@ -15,7 +16,7 @@ router.get('/', function (req, res, next) {
 
 /* GET site scans listing. */
 router.get('/:siteName', function (req, res, next) {
-    fs.readdir(path.join(__dirname, `../public/scans/${req.params.siteName}`), (err, files) => {
+    fs.readdir(path.join(cwd(), `/public/scans/${req.params.siteName}`), (err, files) => {
         if (err) {
             logger.error('fs error? ', err);
         }
@@ -27,7 +28,7 @@ router.get('/:siteName', function (req, res, next) {
 
 /* GET site scans listing. */
 router.get('/:siteName/:scanFolder', function (req, res, next) {
-    fs.readFile(path.join(__dirname, `../public/scans/${req.params.siteName}/${req.params.scanFolder}/summary.json`), (err, data) => {
+    fs.readFile(path.join(cwd(), `/public/scans/${req.params.siteName}/${req.params.scanFolder}/summary.json`), (err, data) => {
         if (err) {
             logger.error('fs error? ', err);
         }
@@ -40,7 +41,7 @@ router.get('/:siteName/:scanFolder', function (req, res, next) {
 
 /* GET site scan detail. */
 router.get('/:siteName/:scanFolder/:scanFile', function (req, res, next) {
-    fs.readFile(path.join(__dirname, `../public/scans/${req.params.siteName}/${req.params.scanFolder}/${req.params.scanFile}.json`), (err, data) => {
+    fs.readFile(path.join(cwd(), `/public/scans/${req.params.siteName}/${req.params.scanFolder}/${req.params.scanFile}.json`), (err, data) => {
         if (err) {
             logger.error('fs error? ', err);
         }

@@ -3,6 +3,7 @@ var router = express.Router();
 var path = require('path');
 var fs = require('fs');
 var winston = require('winston');
+const { cwd } = require('process');
 const logger = winston.createLogger({
   transports: [
     new winston.transports.Console()
@@ -11,7 +12,7 @@ const logger = winston.createLogger({
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-  fs.readdir(path.join(__dirname, '../public/scans/'), (err, files) => {
+  fs.readdir(path.join(cwd(), '/public/scans/'), (err, files) => {
     if (err) {
       logger.error('fs error? ', err);
     }

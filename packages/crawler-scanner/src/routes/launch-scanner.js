@@ -3,10 +3,13 @@ const router = express.Router();
 const path = require('path');
 const multer = require('multer');
 const childProcess = require('child_process');
+const { cwd } = require('process');
+console.log('magz what is cwd: ', cwd());
 const upload = multer({
-    dest: './src/public/data/uploads/'
+    dest: path.join(cwd(), '/public/data/uploads/')
 });
 const winston = require('winston');
+
 const logger = winston.createLogger({
     transports: [
         new winston.transports.Console()
@@ -14,7 +17,7 @@ const logger = winston.createLogger({
 });
 
 router.post('/', upload.single('results-file'), function (req, res, next) {
-    const a11yCheckerProcess = childProcess.spawn('node', [`${path.join(__dirname, '../lib/checker.js')}`, '--crawlFilePath', path.join(__dirname, `../public/data/uploads/${req.file.filename}`), '--filePrefix', req.body.filePrefix, '--saveFilePath', path.join(__dirname, '../public/scans/'), '--hostName', req.file.originalname]);
+    const a11yCheckerProcess = childProcess.spawn('node', [`${path.join(cwd(), '/src/lib/checker.js')}`, '--crawlFilePath', path.join(cwd(), `/public/data/uploads/${req.file.filename}`), '--filePrefix', req.body.filePrefix, '--saveFilePath', path.join(cwd(), '/public/scans/'), '--hostName', req.file.originalname]);
 
     a11yCheckerProcess.stderr.on('data', (data) => {
         logger.error(`stderr: ${data}`);
