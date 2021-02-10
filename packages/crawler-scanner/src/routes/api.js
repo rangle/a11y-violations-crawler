@@ -1,7 +1,7 @@
-var express = require('express');
-var router = express.Router();
-var path = require('path');
-var fs = require('fs');
+const express = require('express');
+const router = express.Router();
+const path = require('path');
+const fs = require('fs');
 const multer = require('multer');
 const childProcess = require('child_process');
 const { cwd } = require('process');
@@ -13,7 +13,7 @@ const libFolderPath = '/src/lib/';
 const upload = multer({
     dest: path.join(cwd(), uploadsFolderPath)
 });
-var winston = require('winston');
+const winston = require('winston');
 const logger = winston.createLogger({
     transports: [
         new winston.transports.Console()

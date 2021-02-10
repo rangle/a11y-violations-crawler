@@ -1,8 +1,8 @@
-var express = require('express');
-var router = express.Router();
-var path = require('path');
-var fs = require('fs');
-var winston = require('winston');
+const express = require('express');
+const router = express.Router();
+const path = require('path');
+const fs = require('fs');
+const winston = require('winston');
 const { cwd } = require('process');
 
 const scansFolderPath = '/public/scans';
