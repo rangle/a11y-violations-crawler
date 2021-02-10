@@ -12,6 +12,9 @@ Created using node v12
 
 Run `yarn` from the root folder
 
+## Pre-Run Setup
+Copy the .env_sample file in crawler-scanner/ and rename it to .env.development
+
 ## Running the crawler/checker from the browser (Via React Frontend)
 
 - navigate to localhost:3000
@@ -20,6 +23,10 @@ Run `yarn` from the root folder
 - press the submit button
 - refresh once the scanning is completed
 
+## Running Only the crawler/checker server
+`yarn workspace a11y-crawler start`
+## Running Only the React server
+`yarn workspace a11y-frontend-react start`
 ## Running the crawler from the command line
 
 Running this will launch the node-crawler and crawl the url you have provided.

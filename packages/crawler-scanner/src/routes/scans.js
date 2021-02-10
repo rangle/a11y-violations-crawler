@@ -10,7 +10,7 @@ const logger = winston.createLogger({
     ]
 });
 
-const scansFolderPath = '/public/scans';
+const scansFolderPath = process.env.SCANS_FOLDER_PATH;
 
 router.get('/', function (req, res, next) {
     res.redirect('/');

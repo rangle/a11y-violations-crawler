@@ -6,9 +6,9 @@ const childProcess = require('child_process');
 const { cwd } = require('process');
 const winston = require('winston');
 
-const scansFolderPath = '/public/scans';
-const uploadsFolderPath = '/public/data/uploads/';
-const libFolderPath = '/src/lib/';
+const scansFolderPath = process.env.SCANS_FOLDER_PATH;
+const uploadsFolderPath = process.env.UPLOADS_FOLDER_PATH;
+const libFolderPath = process.env.LIB_FOLDER_PATH;
 
 const upload = multer({
     dest: path.join(cwd(), uploadsFolderPath)

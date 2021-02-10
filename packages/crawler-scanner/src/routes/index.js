@@ -5,7 +5,7 @@ const fs = require('fs');
 const winston = require('winston');
 const { cwd } = require('process');
 
-const scansFolderPath = process.env.SCANS_FOLDER_PATH; //'/public/scans';
+const scansFolderPath = process.env.SCANS_FOLDER_PATH;
 
 const logger = winston.createLogger({
   transports: [
