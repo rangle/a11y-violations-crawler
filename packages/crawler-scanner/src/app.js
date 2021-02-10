@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const sassMiddleware = require('node-sass-middleware');
 const cors = require('cors');
+const { cwd } = require('process');
 
 const indexRouter = require('./routes/index');
 const scansRouter = require('./routes/scans');
@@ -25,12 +26,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(sassMiddleware({
-  src: path.join(__dirname, 'public'),
-  dest: path.join(__dirname, 'public'),
+  src: path.join(cwd(), 'public'),
+  dest: path.join(cwd(), 'public'),
   indentedSyntax: true, // true = .sass and false = .scss
   sourceMap: true
 }));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(cwd(), 'public')));
 
 app.use('/', indexRouter);
 app.use('/scans', scansRouter);
