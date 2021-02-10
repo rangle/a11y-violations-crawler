@@ -1,7 +1,7 @@
-var express = require('express');
-var router = express.Router();
-var path = require('path');
-var fs = require('fs');
+const express = require('express');
+const router = express.Router();
+const path = require('path');
+const fs = require('fs');
 const winston = require('winston');
 const { cwd } = require('process');
 const logger = winston.createLogger({
@@ -10,7 +10,7 @@ const logger = winston.createLogger({
     ]
 });
 
-const scansFolderPath = '/public/scans';
+const scansFolderPath = process.env.SCANS_FOLDER_PATH;
 
 router.get('/', function (req, res, next) {
     res.redirect('/');

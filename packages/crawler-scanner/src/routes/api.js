@@ -1,19 +1,19 @@
-var express = require('express');
-var router = express.Router();
-var path = require('path');
-var fs = require('fs');
+const express = require('express');
+const router = express.Router();
+const path = require('path');
+const fs = require('fs');
 const multer = require('multer');
 const childProcess = require('child_process');
 const { cwd } = require('process');
 
-const scansFolderPath = '/public/scans';
-const uploadsFolderPath = '/public/data/uploads/';
-const libFolderPath = '/src/lib/';
+const scansFolderPath = process.env.SCANS_FOLDER_PATH;
+const uploadsFolderPath = process.env.UPLOADS_FOLDER_PATH;
+const libFolderPath = process.env.LIB_FOLDER_PATH;
 
 const upload = multer({
     dest: path.join(cwd(), uploadsFolderPath)
 });
-var winston = require('winston');
+const winston = require('winston');
 const logger = winston.createLogger({
     transports: [
         new winston.transports.Console()

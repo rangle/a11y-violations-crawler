@@ -11,7 +11,7 @@ const logger = winston.createLogger({
     ]
 });
 
-const libFolderPath = '/src/lib/';
+const libFolderPath = process.env.LIB_FOLDER_PATH;
 
 router.post('/', function (req, res, next) {
     const a11yLauncherProcess = childProcess.spawn('node', [
