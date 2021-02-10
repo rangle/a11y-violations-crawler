@@ -1,17 +1,37 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { SITE_RESULTS_API } from '../constants';
+import {
+    useParams
+} from "react-router-dom";
+
+import { H2, ListItem, SiteList, ResultContainer, BlueLink } from '../styles/common';
 
 const SiteResults = () => {
+    const [siteResults, setSiteResults] = useState([]);
+    let { siteName } = useParams();
+
+    useEffect(() => {
+        fetchSiteResultsFromAPI();
+    }, []);
+
+    const fetchSiteResultsFromAPI = () => {
+        fetch(`${SITE_RESULTS_API}${siteName}`).then(res => res.json()).then(results => {
+            setSiteResults(results.dirs);
+        }).catch(err => {
+            console.log('error on fetch: ', err);
+        });
+    };
+
     return (
-        <>
+        <ResultContainer>
             <a className="text-blue-600 mb-3 block" href="../">Go Back</a>
-            <h1 className="text-3xl">A11Y POC</h1>
-            {/* <h2 className="text-2xl">Available Scan Results for <%=siteName %></h2> */}
-            <ul className="mt-3">
-                {/* <% dirs.forEach(dir=>{ %>
-                <li className="leading-6"><a className="text-blue-600" href="./<%=dir %>"><%=dir %></a></li>
-                <%}) %> */}
-            </ul>
-        </>
+            <H2>Available Scan Results for {siteName}</H2>
+            <SiteList>
+                {siteResults.map((result, index) =>
+                    <ListItem key={index} aria-label={`View results for ${result}`}><BlueLink to={`./${siteName}/${result}`}>{result}</BlueLink></ListItem>
+                )}
+            </SiteList>
+        </ResultContainer>
     );
 }
 
