@@ -1,33 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import styled from 'styled-components';
+import { SITE_RESULTS_API } from '../constants';
+import { H2, ListItem, SiteList, ResultContainer, BlueLink } from '../styles/common';
 
-const GET_DIRECTORIES_API = 'http://localhost:3001/api/site-results';
-
-const ResultContainer = styled.div`
-    padding: 50px 15px;
-`;
-
-const H2 = styled.h2`
-    font-size: 1.5rem;
-    line-height: 2rem;
-`;
-
-const SiteList = styled.ul`
-    margin-top: 0.75rem;
-`;
-
-const ListItem = styled.li`
-    line-height: 1.5rem;
-
-    &:hover {
-        text-decoration: underline;
-    }
-`;
-
-const BlueLink = styled(Link)`
-    color: rgba(37,99,235,1);
-`;
 
 const SiteListing = () => {
     const [directories, setDirectories] = useState([]);
@@ -37,7 +11,7 @@ const SiteListing = () => {
     }, []);
 
     const fetchDirectoriesFromAPI = () => {
-        fetch(GET_DIRECTORIES_API).then(res => res.json()).then(results => {
+        fetch(SITE_RESULTS_API).then(res => res.json()).then(results => {
             setDirectories(results.directories);
         }).catch(err => {
             console.log('error on fetch: ', err);

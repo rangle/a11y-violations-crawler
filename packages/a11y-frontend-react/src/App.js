@@ -12,14 +12,14 @@ function App() {
       <Header />
       <main className="App">
         <Switch>
-          <Route path="/site-results">
-            <SiteResults />
+          <Route path="/site-results/:siteName/:scanFolder/:scanDetail">
+            <ScanDetails />
           </Route>
-          <Route path="/scan-listing">
+          <Route path="/site-results/:siteName/:scanFolder">
             <ScanListing />
           </Route>
-          <Route path="/scan-details">
-            <ScanDetails />
+          <Route path="/site-results/:siteName">
+            <SiteResults />
           </Route>
           <Route path="/launcher">
             <Launcher />
