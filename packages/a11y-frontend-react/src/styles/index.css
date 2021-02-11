@@ -1,14 +1,19 @@
 body {
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif; }
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
 
 a {
-  color: #00B7FF; }
+  color: #00b7ff;
+}
 
 .show {
-  display: block !important; }
+  display: block !important;
+}
 
 .hidden {
-  display: none; }
+  display: none;
+}
 
 .green {
-  color: green; }
+  color: green;
+}

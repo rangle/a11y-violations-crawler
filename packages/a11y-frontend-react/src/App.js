@@ -24,7 +24,7 @@ function App() {
           <Route path="/launcher">
             <Launcher />
           </Route>
-          <Route path={["/", "/site-listing"]}>
+          <Route path={['/', '/site-listing']}>
             <SiteListing />
           </Route>
         </Switch>
